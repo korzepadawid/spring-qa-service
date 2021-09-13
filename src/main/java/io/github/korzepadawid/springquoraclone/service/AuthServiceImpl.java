@@ -7,7 +7,6 @@ import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +16,13 @@ public class AuthServiceImpl implements AuthService {
 
   private final AppUserRepository appUserRepository;
   private final PasswordEncoder passwordEncoder;
-  private final AuthenticationManager authenticationManager;
 
   @Override
   public AppUserReadDto register(AppUserWriteDto appUserWriteDto) {
     appUserRepository.findByUsernameOrEmail(appUserWriteDto.getUsername(),
         appUserWriteDto.getEmail())
         .ifPresent(appUser -> {
-          throw new UserAlreadyExistsException(appUser.getUsername());
+          throw new UserAlreadyExistsException();
         });
 
     AppUser appUser = mapDtoToEntity(appUserWriteDto);

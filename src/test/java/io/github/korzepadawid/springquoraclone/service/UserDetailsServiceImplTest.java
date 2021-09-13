@@ -39,7 +39,7 @@ class UserDetailsServiceImplTest {
 
   @Test
   void shouldReturnNewSpringSecurityUserWhenUserExists() {
-    AppUser appUser = MockTestData.returnAppUser();
+    AppUser appUser = MockTestData.returnsAppUser();
     when(appUserRepository.findByUsernameOrEmailLike(appUser.getUsername()))
         .thenReturn(Optional.of(appUser));
 

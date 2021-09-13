@@ -2,7 +2,6 @@ package io.github.korzepadawid.springquoraclone.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +34,7 @@ class AuthServiceImplTest {
   @Test
   void shouldThrowUserAlreadyExistsExceptionWhenUserAlreadyExists() {
     AppUserWriteDto appUserWriteDto = MockTestData.returnsAppUserWriteDto();
-    AppUser appUser = MockTestData.returnAppUser();
+    AppUser appUser = MockTestData.returnsAppUser();
     when(appUserRepository
         .findByUsernameOrEmail(appUserWriteDto.getUsername(), appUserWriteDto.getEmail()))
         .thenReturn(Optional.of(appUser));
@@ -44,7 +43,7 @@ class AuthServiceImplTest {
 
     assertThat(throwable)
         .isInstanceOf(UserAlreadyExistsException.class)
-        .hasMessageContaining(appUserWriteDto.getUsername());
+        .hasMessageContaining("already exists");
 
     verifyNoInteractions(passwordEncoder);
   }
@@ -52,7 +51,7 @@ class AuthServiceImplTest {
   @Test
   void shouldSaveAndReturnUserWithHashedPasswordWhenUserDoesNotExist() {
     AppUserWriteDto appUserWriteDto = MockTestData.returnsAppUserWriteDto();
-    AppUser appUser = MockTestData.returnAppUser();
+    AppUser appUser = MockTestData.returnsAppUser();
     String hashedPassword = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
     appUser.setPassword(hashedPassword);
     when(appUserRepository
