@@ -2,7 +2,6 @@ package io.github.korzepadawid.springquoraclone.model;
 
 import java.io.Serializable;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -39,4 +38,28 @@ public class AppUser extends BaseEntity implements Serializable {
 
   @Size(max = 255)
   private String description;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof AppUser)) {
+      return false;
+    }
+
+    AppUser appUser = (AppUser) o;
+
+    if (!email.equals(appUser.email)) {
+      return false;
+    }
+    return username.equals(appUser.username);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = email.hashCode();
+    result = 31 * result + username.hashCode();
+    return result;
+  }
 }

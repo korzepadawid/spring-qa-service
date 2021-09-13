@@ -7,5 +7,7 @@ public interface AppUserRepository {
 
   AppUser save(AppUser appUser);
 
-  Optional<AppUser> findByUsernameOrEmail(String string);
+  Optional<AppUser> findByUsernameOrEmailLike(String string);
+
+  Optional<AppUser> findByUsernameOrEmail(String username, String email);
 }

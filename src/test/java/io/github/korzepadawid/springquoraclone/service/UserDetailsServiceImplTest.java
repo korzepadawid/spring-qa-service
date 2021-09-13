@@ -28,7 +28,7 @@ class UserDetailsServiceImplTest {
   @Test
   void shouldThrowUsernameNotFoundExceptionWhenUserDoesNotExist() {
     final String username = "user";
-    when(appUserRepository.findByUsernameOrEmail(username)).thenReturn(Optional.empty());
+    when(appUserRepository.findByUsernameOrEmailLike(username)).thenReturn(Optional.empty());
 
     Throwable throwable = catchThrowable(() -> userDetailsService.loadUserByUsername(username));
 
@@ -40,7 +40,7 @@ class UserDetailsServiceImplTest {
   @Test
   void shouldReturnNewSpringSecurityUserWhenUserExists() {
     AppUser appUser = MockTestData.returnAppUser();
-    when(appUserRepository.findByUsernameOrEmail(appUser.getUsername()))
+    when(appUserRepository.findByUsernameOrEmailLike(appUser.getUsername()))
         .thenReturn(Optional.of(appUser));
 
     UserDetails userDetails = userDetailsService.loadUserByUsername(appUser.getUsername());
