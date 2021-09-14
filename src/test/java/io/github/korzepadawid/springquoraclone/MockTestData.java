@@ -2,6 +2,7 @@ package io.github.korzepadawid.springquoraclone;
 
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
+import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 
 public abstract class MockTestData {
@@ -27,5 +28,10 @@ public abstract class MockTestData {
 
   public static AppUserReadDto returnsAppUserReadDto() {
     return new AppUserReadDto(returnsAppUser());
+  }
+
+  public static LoginDto returnsLoginDto() {
+    AppUser appUser = returnsAppUser();
+    return new LoginDto(appUser.getUsername(), appUser.getPassword());
   }
 }

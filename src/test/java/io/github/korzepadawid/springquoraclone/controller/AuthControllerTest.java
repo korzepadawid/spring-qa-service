@@ -11,6 +11,8 @@ import io.github.korzepadawid.springquoraclone.JsonMapper;
 import io.github.korzepadawid.springquoraclone.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
+import io.github.korzepadawid.springquoraclone.dto.LoginDto;
+import io.github.korzepadawid.springquoraclone.dto.TokenDto;
 import io.github.korzepadawid.springquoraclone.exception.GlobalExceptionHandler;
 import io.github.korzepadawid.springquoraclone.exception.UserAlreadyExistsException;
 import io.github.korzepadawid.springquoraclone.service.AuthService;
@@ -22,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -37,6 +40,7 @@ class AuthControllerTest {
   private MockMvc mockMvc;
 
   private static final String REGISTER_URL = AuthController.BASE_URL + "/register";
+  private static final String LOGIN_URL = AuthController.BASE_URL + "/login";
 
   @BeforeEach
   void setUp() {
@@ -87,7 +91,51 @@ class AuthControllerTest {
     mockMvc.perform(post(REGISTER_URL)
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(appUserWriteDto)))
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id", is(1)));
+  }
+
+  @Test
+  void shouldReturnErrorDetailsWhenBlankPasswordAndUsername() throws Exception {
+    LoginDto invalidLoginDto = new LoginDto(" ", " ");
+
+    mockMvc.perform(post(LOGIN_URL)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(invalidLoginDto)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code", is(400)))
+        .andExpect(
+            jsonPath("$.message", StringContains.containsStringIgnoringCase("validation error")))
+        .andExpect(jsonPath("$.errors.username").isNotEmpty())
+        .andExpect(jsonPath("$.errors.password").isNotEmpty());
+  }
+
+  @Test
+  void shouldReturnErrorDetailsWhenBadCredentialsException() throws Exception {
+    final String exceptionMessage = "Bad credentials";
+    when(authService.login(any(LoginDto.class)))
+        .thenThrow(new BadCredentialsException(exceptionMessage));
+
+    mockMvc.perform(post(LOGIN_URL)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(MockTestData.returnsLoginDto())))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.code", is(403)))
+        .andExpect(jsonPath("$.message", is(exceptionMessage)));
+  }
+
+  @Test
+  void shouldReturnTokenAnd200WhenValidCredentials() throws Exception {
+    TokenDto tokenDto = new TokenDto(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9"
+            + "lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
+    when(authService.login(any(LoginDto.class)))
+        .thenReturn(tokenDto);
+
+    mockMvc.perform(post(LOGIN_URL)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(MockTestData.returnsLoginDto())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.accessToken", is(tokenDto.getAccessToken())));
   }
 }

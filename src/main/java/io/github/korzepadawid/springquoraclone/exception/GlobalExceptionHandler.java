@@ -2,6 +2,7 @@ package io.github.korzepadawid.springquoraclone.exception;
 
 import io.github.korzepadawid.springquoraclone.dto.ErrorDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,5 +40,16 @@ public class GlobalExceptionHandler {
         ));
 
     return errorDto;
+  }
+
+  @ExceptionHandler(AuthenticationException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ErrorDto handleAuthenticationException(
+      AuthenticationException exception) {
+    return ErrorDto.builder()
+        .message(exception.getMessage())
+        .code(HttpStatus.FORBIDDEN.value())
+        .build();
   }
 }
