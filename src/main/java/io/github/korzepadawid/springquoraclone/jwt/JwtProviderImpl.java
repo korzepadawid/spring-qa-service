@@ -6,10 +6,10 @@ import io.github.korzepadawid.springquoraclone.config.JwtConfig;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Service
+@Component
 public class JwtProviderImpl implements JwtProvider {
 
   private final JwtConfig jwtConfig;
