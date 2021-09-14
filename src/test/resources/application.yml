@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+jwt:
+  config:
+    secret: test
+    access-token-expiration-in-seconds: 1800

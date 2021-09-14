@@ -7,3 +7,6 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+jwt:
+  config:
+    access-token-expiration-in-seconds: 1800

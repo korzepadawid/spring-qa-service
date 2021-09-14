@@ -31,7 +31,8 @@ public class GlobalExceptionHandler {
     ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(),
         "Validation error occurred.");
 
-    exception.getBindingResult().getAllErrors()
+    exception.getBindingResult()
+        .getAllErrors()
         .forEach(error -> errorDto.getErrors().put(
             ((FieldError) error).getField(),
             error.getDefaultMessage()

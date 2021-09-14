@@ -2,11 +2,19 @@ package io.github.korzepadawid.springquoraclone.service;
 
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
+import io.github.korzepadawid.springquoraclone.dto.LoginDto;
+import io.github.korzepadawid.springquoraclone.dto.TokenDto;
 import io.github.korzepadawid.springquoraclone.exception.UserAlreadyExistsException;
+import io.github.korzepadawid.springquoraclone.jwt.JwtProvider;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +24,8 @@ public class AuthServiceImpl implements AuthService {
 
   private final AppUserRepository appUserRepository;
   private final PasswordEncoder passwordEncoder;
+  private final AuthenticationManager authenticationManager;
+  private final JwtProvider jwtProvider;
 
   @Override
   public AppUserReadDto register(AppUserWriteDto appUserWriteDto) {
@@ -29,6 +39,21 @@ public class AuthServiceImpl implements AuthService {
     AppUser savedAppUser = appUserRepository.save(appUser);
 
     return new AppUserReadDto(savedAppUser);
+  }
+
+  @Override
+  public TokenDto login(LoginDto loginDto) {
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginDto.getUsername(),
+            loginDto.getPassword()
+        )
+    );
+
+    User user = (User) authentication.getPrincipal();
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    return new TokenDto(jwtProvider.generateToken(user));
   }
 
   private AppUser mapDtoToEntity(AppUserWriteDto appUserWriteDto) {
