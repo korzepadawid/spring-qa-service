@@ -5,7 +5,7 @@ import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.dto.TokenDto;
 import io.github.korzepadawid.springquoraclone.exception.UserAlreadyExistsException;
-import io.github.korzepadawid.springquoraclone.jwt.JwtProvider;
+import io.github.korzepadawid.springquoraclone.security.JwtProvider;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;

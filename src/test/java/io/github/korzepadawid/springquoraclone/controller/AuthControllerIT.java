@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,6 +30,7 @@ class AuthControllerIT extends AbstractContainerBaseTest {
   public static final String LOGIN_URL = AuthController.BASE_URL + "/login";
 
   @Test
+  @Transactional
   void shouldRegisterUserAndLoginWhenValid() throws Exception {
     AppUserWriteDto appUserWriteDto = MockTestData.returnsAppUserWriteDto();
 
