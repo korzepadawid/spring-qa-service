@@ -26,12 +26,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
-        .csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .csrf()
+        .disable()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeRequests()
-        .antMatchers("/api/v1/auth/**").permitAll()
-        .anyRequest().authenticated()
+        .antMatchers("/v2/api-docs",
+            "/configuration/ui",
+            "/swagger-resources",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/swagger-resources/configuration/ui",
+            "/swagge‌​r-ui.html",
+            "/swagger-resources/configuration/security")
+        .permitAll()
+        .antMatchers("/api/v1/auth/**")
+        .permitAll()
+        .anyRequest()
+        .authenticated()
         .and()
         .exceptionHandling()
         .authenticationEntryPoint(jwtAuthenticationFailureHandler)
