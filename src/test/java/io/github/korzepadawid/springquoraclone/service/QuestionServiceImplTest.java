@@ -1,15 +1,19 @@
 package io.github.korzepadawid.springquoraclone.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import io.github.korzepadawid.springquoraclone.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
+import io.github.korzepadawid.springquoraclone.exception.ResourceNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,5 +60,31 @@ class QuestionServiceImplTest {
     assertThat(questionReadDto).isNotNull()
         .hasFieldOrPropertyWithValue("title", questionWriteDto.getTitle());
     assertThat(questionReadDto.getAuthor()).isNull();
+  }
+
+  @Test
+  void shouldThrowQuestionNotFoundExceptionWhenQuestionDoesNotExist() {
+    final Long id = 1L;
+    when(questionRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    Throwable throwable = catchThrowable(() -> questionService.getQuestionById(id));
+
+    assertThat(throwable)
+        .isInstanceOf(ResourceNotFoundException.class)
+        .hasMessageContaining(id.toString());
+  }
+
+  @Test
+  void shouldReturnQuestionWhenQuestionExists() {
+    Question question = MockTestData.returnsQuestion(true);
+    question.setId(1L);
+    when(questionRepository.findById(anyLong())).thenReturn(Optional.of(question));
+
+    QuestionReadDto questionReadDto = questionService.getQuestionById(question.getId());
+
+    assertThat(questionReadDto)
+        .isNotNull()
+        .hasFieldOrPropertyWithValue("id", question.getId())
+        .hasFieldOrPropertyWithValue("author", null);
   }
 }

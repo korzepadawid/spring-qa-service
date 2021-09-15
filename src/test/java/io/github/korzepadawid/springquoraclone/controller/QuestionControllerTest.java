@@ -2,8 +2,11 @@ package io.github.korzepadawid.springquoraclone.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +15,7 @@ import io.github.korzepadawid.springquoraclone.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.GlobalExceptionHandler;
+import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.service.QuestionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,5 +86,31 @@ class QuestionControllerTest {
         .content(JsonMapper.toJson(questionWriteDto)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.title", is(questionWriteDto.getTitle())));
+  }
+
+  @Test
+  void shouldReturn404WhenQuestionDoesNotExist() throws Exception {
+    final Long id = 1L;
+    when(questionService.getQuestionById(anyLong())).thenThrow(new QuestionNotFoundException(id));
+
+    mockMvc.perform(get(String.format("%s/%d", QuestionController.BASE_URL, id)))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn400WhenWrongTypeOfId() throws Exception {
+    mockMvc.perform(get(String.format("%s/%s", QuestionController.BASE_URL, "dfgsdfgd")))
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void shouldReturnQuestionWhenQuestionExists() throws Exception {
+    QuestionReadDto questionReadDto = MockTestData.returnsQuestionReadDto(false);
+    when(questionService.getQuestionById(anyLong())).thenReturn(questionReadDto);
+
+    mockMvc.perform(get(String.format("%s/%d", QuestionController.BASE_URL, 1)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.title", is(questionReadDto.getTitle())));
   }
 }

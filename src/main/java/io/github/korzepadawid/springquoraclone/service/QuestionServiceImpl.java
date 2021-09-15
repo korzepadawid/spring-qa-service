@@ -2,6 +2,7 @@ package io.github.korzepadawid.springquoraclone.service;
 
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
+import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
@@ -28,6 +29,13 @@ public class QuestionServiceImpl implements QuestionService {
     Question savedQuestion = questionRepository.save(question);
 
     return new QuestionReadDto(savedQuestion);
+  }
+
+  @Override
+  public QuestionReadDto getQuestionById(Long id) {
+    return questionRepository.findById(id)
+        .map(QuestionReadDto::new)
+        .orElseThrow(() -> new QuestionNotFoundException(id));
   }
 
   private Question mapDtoToEntity(QuestionWriteDto questionWriteDto) {

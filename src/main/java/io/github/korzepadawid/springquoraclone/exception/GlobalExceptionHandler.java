@@ -52,4 +52,15 @@ public class GlobalExceptionHandler {
         .code(HttpStatus.FORBIDDEN.value())
         .build();
   }
+
+  @ExceptionHandler(ResourceNotFoundException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorDto handleResourceNotFound(
+      ResourceNotFoundException exception) {
+    return ErrorDto.builder()
+        .message(exception.getMessage())
+        .code(HttpStatus.NOT_FOUND.value())
+        .build();
+  }
 }
