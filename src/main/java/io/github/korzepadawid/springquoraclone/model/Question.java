@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +34,6 @@ public class Question extends BaseEntity implements Serializable {
   private String title;
 
   @NotBlank
-  @Column(unique = true)
   @Size(min = 3, max = 255)
   private String description;
 

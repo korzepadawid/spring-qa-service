@@ -8,10 +8,13 @@ import io.github.korzepadawid.springquoraclone.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.dto.TokenDto;
+import io.github.korzepadawid.springquoraclone.model.AppUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -46,5 +49,29 @@ class AuthServiceIntegrationTest extends AbstractContainerBaseTest {
     );
 
     assertThat(tokenDto.getAccessToken()).isNotBlank();
+  }
+
+  @Test
+  @Transactional
+  @WithMockUser("bmurray")
+  void shouldReturnUserDetailsWhenUserIsLoggedIn() {
+    AppUserWriteDto appUserWriteDto = MockTestData.returnsAppUserWriteDto();
+    appUserWriteDto.setUsername("bmurray");
+    authService.register(appUserWriteDto);
+
+    AppUser appUser = authService.getCurrentlyLoggedUser();
+
+    assertThat(appUser)
+        .isNotNull()
+        .hasFieldOrPropertyWithValue("username", appUser.getUsername())
+        .hasFieldOrPropertyWithValue("email", appUser.getEmail());
+  }
+
+  @Test
+  @WithMockUser(username = "notexistinguser")
+  void shouldThrowUserNotFoundExceptionWhenUserNotFound() {
+    Throwable throwable = catchThrowable(() -> authService.getCurrentlyLoggedUser());
+
+    assertThat(throwable).isInstanceOf(UsernameNotFoundException.class);
   }
 }

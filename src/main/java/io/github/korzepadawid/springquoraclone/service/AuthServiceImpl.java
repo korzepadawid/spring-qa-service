@@ -5,9 +5,9 @@ import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.dto.TokenDto;
 import io.github.korzepadawid.springquoraclone.exception.UserAlreadyExistsException;
-import io.github.korzepadawid.springquoraclone.security.JwtProvider;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
+import io.github.korzepadawid.springquoraclone.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,15 @@ public class AuthServiceImpl implements AuthService {
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
     return new TokenDto(jwtProvider.generateToken(user));
+  }
+
+  @Override
+  public AppUser getCurrentlyLoggedUser() {
+    User user = (User) SecurityContextHolder.getContext()
+        .getAuthentication()
+        .getPrincipal();
+    return appUserRepository.findByUsernameOrEmailLike(user.getUsername())
+        .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
   }
 
   private AppUser mapDtoToEntity(AppUserWriteDto appUserWriteDto) {
