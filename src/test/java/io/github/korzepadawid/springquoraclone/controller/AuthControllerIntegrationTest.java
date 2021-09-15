@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AuthControllerIT extends AbstractContainerBaseTest {
+class AuthControllerIntegrationTest extends AbstractContainerBaseTest {
 
   @Autowired
   private MockMvc mockMvc;

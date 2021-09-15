@@ -15,7 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-class AuthServiceIT extends AbstractContainerBaseTest {
+class AuthServiceIntegrationTest extends AbstractContainerBaseTest {
 
   @Autowired
   private AuthService authService;
