@@ -15,16 +15,17 @@ import org.springframework.beans.BeanUtils;
 @AllArgsConstructor
 public class QuestionReadDto {
 
+  private Long id;
   private String title;
   private String description;
-  private Long authorId;
+  private AppUserReadDto author;
 
   public QuestionReadDto(Question question) {
-    BeanUtils.copyProperties(question, this, "authorId");
-    if(question.getAnonymous()){
-      this.authorId = null;
+    BeanUtils.copyProperties(question, this, "author");
+    if (question.getAnonymous()) {
+      this.author = null;
     } else {
-      this.authorId = question.getAuthor().getId();
+      this.author = new AppUserReadDto(question.getAuthor());
     }
   }
 }

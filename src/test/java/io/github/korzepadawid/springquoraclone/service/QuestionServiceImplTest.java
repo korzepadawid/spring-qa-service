@@ -40,7 +40,7 @@ class QuestionServiceImplTest {
 
     assertThat(questionReadDto).isNotNull()
         .hasFieldOrPropertyWithValue("title", questionWriteDto.getTitle());
-    assertThat(questionReadDto.getAuthorId()).isNotNull();
+    assertThat(questionReadDto.getAuthor()).isNotNull();
   }
 
   @Test
@@ -55,6 +55,6 @@ class QuestionServiceImplTest {
 
     assertThat(questionReadDto).isNotNull()
         .hasFieldOrPropertyWithValue("title", questionWriteDto.getTitle());
-    assertThat(questionReadDto.getAuthorId()).isNull();
+    assertThat(questionReadDto.getAuthor()).isNull();
   }
 }
