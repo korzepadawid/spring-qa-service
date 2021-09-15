@@ -8,6 +8,7 @@ import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +17,7 @@ public class QuestionServiceImpl implements QuestionService {
   private final AuthService authService;
   private final QuestionRepository questionRepository;
 
+  @Transactional
   @Override
   public QuestionReadDto createQuestion(QuestionWriteDto questionWriteDto) {
     AppUser currentlyLoggedUser = authService.getCurrentlyLoggedUser();

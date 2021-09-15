@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtProvider jwtProvider;
 
+  @Transactional
   @Override
   public AppUserReadDto register(AppUserWriteDto appUserWriteDto) {
     appUserRepository.findByUsernameOrEmail(appUserWriteDto.getUsername(),
