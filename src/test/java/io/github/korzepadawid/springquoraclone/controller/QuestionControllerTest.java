@@ -3,8 +3,11 @@ package io.github.korzepadawid.springquoraclone.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.github.korzepadawid.springquoraclone.JsonMapper;
 import io.github.korzepadawid.springquoraclone.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
+import io.github.korzepadawid.springquoraclone.dto.QuestionUpdateDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.GlobalExceptionHandler;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
@@ -93,13 +97,13 @@ class QuestionControllerTest {
     final Long id = 1L;
     when(questionService.getQuestionById(anyLong())).thenThrow(new QuestionNotFoundException(id));
 
-    mockMvc.perform(get(String.format("%s/%d", QuestionController.BASE_URL, id)))
+    mockMvc.perform(get(singleQuestionUrl(id)))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void shouldReturn400WhenWrongTypeOfId() throws Exception {
-    mockMvc.perform(get(String.format("%s/%s", QuestionController.BASE_URL, "dfgsdfgd")))
+    mockMvc.perform(get(QuestionController.BASE_URL + "/test"))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -109,8 +113,67 @@ class QuestionControllerTest {
     QuestionReadDto questionReadDto = MockTestData.returnsQuestionReadDto(false);
     when(questionService.getQuestionById(anyLong())).thenReturn(questionReadDto);
 
-    mockMvc.perform(get(String.format("%s/%d", QuestionController.BASE_URL, 1)))
+    mockMvc.perform(get(singleQuestionUrl(1L)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title", is(questionReadDto.getTitle())));
+  }
+
+  @Test
+  void shouldReturn404WhenDeletedQuestionNotFound() throws Exception {
+    final Long id = 1L;
+    doThrow(new QuestionNotFoundException(id)).when(questionService).deleteQuestionById(anyLong());
+
+    mockMvc.perform(delete(singleQuestionUrl(id)))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn204WhenDeletedQuestion() throws Exception {
+    mockMvc.perform(delete(singleQuestionUrl(1L)))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldReturn404WhenUpdatedQuestionNotFound() throws Exception {
+    final Long id = 1L;
+    doThrow(new QuestionNotFoundException(id)).when(questionService)
+        .updateQuestionById(any(QuestionUpdateDto.class), anyLong());
+
+    mockMvc.perform(patch(singleQuestionUrl(id))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(new QuestionUpdateDto())))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn400WhenValidationErrors() throws Exception {
+    final Long id = 1L;
+    QuestionUpdateDto questionUpdateDto = QuestionUpdateDto.builder()
+        .title("x".repeat(256))
+        .description("x".repeat(256))
+        .build();
+
+    mockMvc.perform(patch(singleQuestionUrl(id))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(questionUpdateDto)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors.title").isNotEmpty())
+        .andExpect(jsonPath("$.errors.description").isNotEmpty());
+  }
+
+  @Test
+  void shouldReturn204WhenUpdatedQuestion() throws Exception {
+    final Long id = 1L;
+
+    mockMvc.perform(patch(singleQuestionUrl(id))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(QuestionUpdateDto.builder()
+            .title("Is it okay?")
+            .build())))
+        .andExpect(status().isNoContent());
+  }
+
+  private String singleQuestionUrl(Long id) {
+    return String.format("%s/%d", QuestionController.BASE_URL, id);
   }
 }

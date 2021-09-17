@@ -1,6 +1,7 @@
 package io.github.korzepadawid.springquoraclone.service;
 
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
+import io.github.korzepadawid.springquoraclone.dto.QuestionUpdateDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
@@ -35,6 +36,34 @@ public class QuestionServiceImpl implements QuestionService {
   public QuestionReadDto getQuestionById(Long id) {
     return questionRepository.findById(id)
         .map(QuestionReadDto::new)
+        .orElseThrow(() -> new QuestionNotFoundException(id));
+  }
+
+  @Transactional
+  @Override
+  public void updateQuestionById(QuestionUpdateDto updates, Long id) {
+    Question question = findQuestionByIdForCurrentUser(id);
+    if (updates != null) {
+
+      if (updates.getDescription() != null) {
+        question.setDescription(updates.getDescription());
+      }
+
+      if (updates.getTitle() != null) {
+        question.setTitle(updates.getTitle());
+      }
+    }
+  }
+
+  @Transactional
+  @Override
+  public void deleteQuestionById(Long id) {
+    Question question = findQuestionByIdForCurrentUser(id);
+    questionRepository.delete(question);
+  }
+
+  private Question findQuestionByIdForCurrentUser(Long id) {
+    return questionRepository.findByIdAndAuthor(id, authService.getCurrentlyLoggedUser())
         .orElseThrow(() -> new QuestionNotFoundException(id));
   }
 
