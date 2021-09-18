@@ -7,8 +7,11 @@ import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundExcepti
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,16 +22,26 @@ public class QuestionServiceImpl implements QuestionService {
   private final AuthService authService;
   private final QuestionRepository questionRepository;
 
+  public static final Integer MIN_PAGE = 1;
+  public static final Integer MAX_PAGE_LIMIT = 5;
+
+  @Override
+  public List<QuestionReadDto> findQuestions(String keyword, Integer page) {
+    int parsedPage = page < 1 ? MIN_PAGE : page;
+    return questionRepository
+        .findAllByKeyword(keyword, PageRequest.of(parsedPage - 1, MAX_PAGE_LIMIT))
+        .stream()
+        .map(QuestionReadDto::new)
+        .collect(Collectors.toList());
+  }
+
   @Transactional
   @Override
   public QuestionReadDto createQuestion(QuestionWriteDto questionWriteDto) {
     AppUser currentlyLoggedUser = authService.getCurrentlyLoggedUser();
     Question question = mapDtoToEntity(questionWriteDto);
-
     question.setAuthor(currentlyLoggedUser);
-
     Question savedQuestion = questionRepository.save(question);
-
     return new QuestionReadDto(savedQuestion);
   }
 
@@ -44,11 +57,9 @@ public class QuestionServiceImpl implements QuestionService {
   public void updateQuestionById(QuestionUpdateDto updates, Long id) {
     Question question = findQuestionByIdForCurrentUser(id);
     if (updates != null) {
-
       if (updates.getDescription() != null) {
         question.setDescription(updates.getDescription());
       }
-
       if (updates.getTitle() != null) {
         question.setTitle(updates.getTitle());
       }

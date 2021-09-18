@@ -10,6 +10,8 @@ import io.github.korzepadawid.springquoraclone.model.Question;
 
 public abstract class MockTestData {
 
+  public static final Long ID = 2L;
+
   public static AppUser returnsAppUser() {
     return AppUser.builder()
         .id(1L)

@@ -37,10 +37,8 @@ public class AuthServiceImpl implements AuthService {
         .ifPresent(appUser -> {
           throw new UserAlreadyExistsException();
         });
-
     AppUser appUser = mapDtoToEntity(appUserWriteDto);
     AppUser savedAppUser = appUserRepository.save(appUser);
-
     return new AppUserReadDto(savedAppUser);
   }
 
@@ -52,10 +50,8 @@ public class AuthServiceImpl implements AuthService {
             loginDto.getPassword()
         )
     );
-
     User user = (User) authentication.getPrincipal();
     SecurityContextHolder.getContext().setAuthentication(authentication);
-
     return new TokenDto(jwtProvider.generateToken(user));
   }
 
