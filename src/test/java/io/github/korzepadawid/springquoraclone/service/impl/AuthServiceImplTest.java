@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone.service;
+package io.github.korzepadawid.springquoraclone.service.impl;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;

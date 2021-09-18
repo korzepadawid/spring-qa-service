@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone.service;
+package io.github.korzepadawid.springquoraclone.service.impl;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
@@ -18,6 +18,7 @@ import io.github.korzepadawid.springquoraclone.exception.ResourceNotFoundExcepti
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
+import io.github.korzepadawid.springquoraclone.service.AuthService;
 import io.github.korzepadawid.springquoraclone.service.impl.QuestionServiceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
