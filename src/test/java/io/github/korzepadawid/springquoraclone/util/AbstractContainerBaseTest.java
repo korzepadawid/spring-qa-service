@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone;
+package io.github.korzepadawid.springquoraclone.util;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.context.DynamicPropertyRegistry;

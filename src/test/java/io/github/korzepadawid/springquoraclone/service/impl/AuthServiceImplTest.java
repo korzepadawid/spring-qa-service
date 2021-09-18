@@ -5,13 +5,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import io.github.korzepadawid.springquoraclone.MockTestData;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.UserAlreadyExistsException;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
-import io.github.korzepadawid.springquoraclone.service.impl.AuthServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

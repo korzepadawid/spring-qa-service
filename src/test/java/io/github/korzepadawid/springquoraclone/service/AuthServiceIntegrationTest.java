@@ -3,8 +3,8 @@ package io.github.korzepadawid.springquoraclone.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
-import io.github.korzepadawid.springquoraclone.AbstractContainerBaseTest;
-import io.github.korzepadawid.springquoraclone.MockTestData;
+import io.github.korzepadawid.springquoraclone.util.AbstractContainerBaseTest;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.dto.TokenDto;

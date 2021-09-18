@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.korzepadawid.springquoraclone.JsonMapper;
-import io.github.korzepadawid.springquoraclone.MockTestData;
+import io.github.korzepadawid.springquoraclone.util.JsonMapper;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
@@ -39,9 +39,6 @@ class AuthControllerTest {
 
   private MockMvc mockMvc;
 
-  private static final String REGISTER_URL = AuthController.BASE_URL + "/register";
-  private static final String LOGIN_URL = AuthController.BASE_URL + "/login";
-
   @BeforeEach
   void setUp() {
     mockMvc = MockMvcBuilders.standaloneSetup(authController)
@@ -58,7 +55,7 @@ class AuthControllerTest {
         .description("x".repeat(400))
         .build();
 
-    mockMvc.perform(post(REGISTER_URL)
+    mockMvc.perform(post("/api/v1/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(appUserWriteDto)))
         .andExpect(status().isBadRequest())
@@ -74,7 +71,7 @@ class AuthControllerTest {
     when(authService.register(any(AppUserWriteDto.class)))
         .thenThrow(new UserAlreadyExistsException());
 
-    mockMvc.perform(post(REGISTER_URL)
+    mockMvc.perform(post("/api/v1/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(appUserWriteDto)))
         .andExpect(status().isBadRequest())
@@ -88,7 +85,7 @@ class AuthControllerTest {
     AppUserReadDto appUserReadDto = MockTestData.returnsAppUserReadDto();
     when(authService.register(any(AppUserWriteDto.class))).thenReturn(appUserReadDto);
 
-    mockMvc.perform(post(REGISTER_URL)
+    mockMvc.perform(post("/api/v1/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(appUserWriteDto)))
         .andExpect(status().isCreated())
@@ -99,7 +96,7 @@ class AuthControllerTest {
   void shouldReturnErrorDetailsWhenBlankPasswordAndUsername() throws Exception {
     LoginDto invalidLoginDto = new LoginDto(" ", " ");
 
-    mockMvc.perform(post(LOGIN_URL)
+    mockMvc.perform(post("/api/v1/auth/login")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(invalidLoginDto)))
         .andExpect(status().isBadRequest())
@@ -116,7 +113,7 @@ class AuthControllerTest {
     when(authService.login(any(LoginDto.class)))
         .thenThrow(new BadCredentialsException(exceptionMessage));
 
-    mockMvc.perform(post(LOGIN_URL)
+    mockMvc.perform(post("/api/v1/auth/login")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(MockTestData.returnsLoginDto())))
         .andExpect(status().isForbidden())
@@ -132,7 +129,7 @@ class AuthControllerTest {
     when(authService.login(any(LoginDto.class)))
         .thenReturn(tokenDto);
 
-    mockMvc.perform(post(LOGIN_URL)
+    mockMvc.perform(post("/api/v1/auth/login")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(MockTestData.returnsLoginDto())))
         .andExpect(status().isOk())

@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone;
+package io.github.korzepadawid.springquoraclone.util;
 
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;

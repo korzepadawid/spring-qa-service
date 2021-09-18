@@ -17,14 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.korzepadawid.springquoraclone.JsonMapper;
-import io.github.korzepadawid.springquoraclone.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionUpdateDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.GlobalExceptionHandler;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.service.QuestionService;
+import io.github.korzepadawid.springquoraclone.util.JsonMapper;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +64,7 @@ class QuestionControllerTest {
     when(questionService.createQuestion(any(QuestionWriteDto.class)))
         .thenThrow(new UsernameNotFoundException(exceptionMessage));
 
-    mockMvc.perform(post(QuestionController.BASE_URL)
+    mockMvc.perform(post("/api/v1/questions")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(questionWriteDto)))
         .andExpect(status().isForbidden())
@@ -78,7 +78,7 @@ class QuestionControllerTest {
         .title("")
         .build();
 
-    mockMvc.perform(post(QuestionController.BASE_URL)
+    mockMvc.perform(post("/api/v1/questions")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(questionWriteDto)))
         .andExpect(status().isBadRequest())
@@ -92,7 +92,7 @@ class QuestionControllerTest {
         .returnsQuestionReadDto(questionWriteDto.getAnonymous());
     when(questionService.createQuestion(any(QuestionWriteDto.class))).thenReturn(questionReadDto);
 
-    mockMvc.perform(post(QuestionController.BASE_URL)
+    mockMvc.perform(post("/api/v1/questions")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(questionWriteDto)))
         .andExpect(status().isCreated())
@@ -110,7 +110,7 @@ class QuestionControllerTest {
 
   @Test
   void shouldReturn400WhenWrongTypeOfId() throws Exception {
-    mockMvc.perform(get(QuestionController.BASE_URL + "/test"))
+    mockMvc.perform(get("/api/v1/questions/test"))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -180,7 +180,7 @@ class QuestionControllerTest {
   void shouldReturn200WhenEmptyResult() throws Exception {
     when(questionService.findQuestions(anyString(), anyInt())).thenReturn(new ArrayList<>());
 
-    mockMvc.perform(get(QuestionController.BASE_URL))
+    mockMvc.perform(get("/api/v1/questions"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[*]", empty()));
   }
@@ -194,12 +194,12 @@ class QuestionControllerTest {
     when(questionService.findQuestions(anyString(), anyInt()))
         .thenReturn(questionReadDtos);
 
-    mockMvc.perform(get(QuestionController.BASE_URL + "?keyword=test&page=1"))
+    mockMvc.perform(get("/api/v1/questions?keyword=test&page=1"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[*]", hasSize(questionReadDtos.size())));
   }
 
   private String singleQuestionUrl(Long id) {
-    return String.format("%s/%d", QuestionController.BASE_URL, id);
+    return String.format("%s/%d", "/api/v1/questions", id);
   }
 }

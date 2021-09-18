@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.Mockito.when;
 
-import io.github.korzepadawid.springquoraclone.MockTestData;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
 import java.util.Optional;

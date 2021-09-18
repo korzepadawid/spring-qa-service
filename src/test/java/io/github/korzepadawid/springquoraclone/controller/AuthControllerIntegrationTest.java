@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.korzepadawid.springquoraclone.AbstractContainerBaseTest;
-import io.github.korzepadawid.springquoraclone.JsonMapper;
-import io.github.korzepadawid.springquoraclone.MockTestData;
+import io.github.korzepadawid.springquoraclone.util.AbstractContainerBaseTest;
+import io.github.korzepadawid.springquoraclone.util.JsonMapper;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import org.junit.jupiter.api.Test;
@@ -26,15 +26,12 @@ class AuthControllerIntegrationTest extends AbstractContainerBaseTest {
   @Autowired
   private MockMvc mockMvc;
 
-  public static final String REGISTER_URL = AuthController.BASE_URL + "/register";
-  public static final String LOGIN_URL = AuthController.BASE_URL + "/login";
-
   @Test
   @Transactional
   void shouldRegisterUserAndLoginWhenValid() throws Exception {
     AppUserWriteDto appUserWriteDto = MockTestData.returnsAppUserWriteDto();
 
-    mockMvc.perform(post(REGISTER_URL)
+    mockMvc.perform(post("/api/v1/auth/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(appUserWriteDto)))
         .andDo(print())
@@ -42,7 +39,7 @@ class AuthControllerIntegrationTest extends AbstractContainerBaseTest {
         .andExpect(jsonPath("$.username", is(appUserWriteDto.getUsername())))
         .andReturn();
 
-    mockMvc.perform(post(LOGIN_URL)
+    mockMvc.perform(post("/api/v1/auth/login")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(LoginDto.builder()
             .username(appUserWriteDto.getUsername())
@@ -55,7 +52,7 @@ class AuthControllerIntegrationTest extends AbstractContainerBaseTest {
 
   @Test
   void shouldReturn403ForbiddenWhenInvalidUser() throws Exception {
-    mockMvc.perform(post(LOGIN_URL)
+    mockMvc.perform(post("/api/v1/auth/login")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(LoginDto.builder()
             .username("john")

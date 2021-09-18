@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone;
+package io.github.korzepadawid.springquoraclone.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
