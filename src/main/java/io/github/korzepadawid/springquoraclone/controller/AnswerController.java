@@ -3,6 +3,7 @@ package io.github.korzepadawid.springquoraclone.controller;
 import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AnswerWriteDto;
 import io.github.korzepadawid.springquoraclone.service.AnswerService;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,8 @@ public class AnswerController {
 
   @GetMapping("/api/v1/questions/{questionId}/answers")
   @ResponseStatus(HttpStatus.OK)
-  public void getAllQuestionAnswers(@PathVariable Long questionId) {
+  public List<AnswerReadDto> getAllQuestionAnswers(@PathVariable Long questionId) {
+    return answerService.findAllQuestionAnswers(questionId);
   }
 
   @PostMapping("/api/v1/questions/{questionId}/answers")

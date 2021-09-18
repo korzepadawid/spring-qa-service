@@ -9,6 +9,8 @@ import io.github.korzepadawid.springquoraclone.repository.AnswerRepository;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
 import io.github.korzepadawid.springquoraclone.service.AnswerService;
 import io.github.korzepadawid.springquoraclone.service.AuthService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,17 @@ public class AnswerServiceImpl implements AnswerService {
           question.addAnswer(savedAnswer);
           return new AnswerReadDto(savedAnswer);
         })
+        .orElseThrow(() -> new QuestionNotFoundException(questionId));
+  }
+
+  @Transactional
+  @Override
+  public List<AnswerReadDto> findAllQuestionAnswers(Long questionId) {
+    return questionRepository.findById(questionId)
+        .map(question -> answerRepository.findByQuestion(question)
+            .stream()
+            .map(AnswerReadDto::new)
+            .collect(Collectors.toList()))
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
   }
 

@@ -1,9 +1,12 @@
 package io.github.korzepadawid.springquoraclone.controller;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,6 +18,9 @@ import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundExcepti
 import io.github.korzepadawid.springquoraclone.service.AnswerService;
 import io.github.korzepadawid.springquoraclone.util.JsonMapper;
 import io.github.korzepadawid.springquoraclone.util.MockTestData;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,12 +64,45 @@ class AnswerControllerTest {
   @Test
   void shouldReturn201WhenCreatedAnswer() throws Exception {
     AnswerReadDto answerReadDto = MockTestData.returnsAnswerReadDto();
-    when(answerService.createAnswer(any(AnswerWriteDto.class), anyLong())).thenReturn(answerReadDto);
+    when(answerService.createAnswer(any(AnswerWriteDto.class), anyLong()))
+        .thenReturn(answerReadDto);
 
     mockMvc.perform(post("/api/v1/questions/1/answers")
         .contentType(MediaType.APPLICATION_JSON)
         .content(JsonMapper.toJson(MockTestData.returnsAnswerWriteDto())))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.text", is(answerReadDto.getText())));
+  }
+
+  @Test
+  void shouldReturn404AndStopListingAnswersWhenQuestionNotFound() throws Exception {
+    when(answerService.findAllQuestionAnswers(anyLong()))
+        .thenThrow(new QuestionNotFoundException(MockTestData.ID));
+
+    mockMvc.perform(get("/api/v1/questions/1/answers"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn200WhenFoundAnswersAndQuestionExists() throws Exception {
+    List<AnswerReadDto> answerReadDtos = Arrays.asList(
+        MockTestData.returnsAnswerReadDto(),
+        MockTestData.returnsAnswerReadDto(),
+        MockTestData.returnsAnswerReadDto()
+    );
+    when(answerService.findAllQuestionAnswers(anyLong())).thenReturn(answerReadDtos);
+
+    mockMvc.perform(get("/api/v1/questions/1/answers"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[*]", hasSize(answerReadDtos.size())));
+  }
+
+  @Test
+  void shouldReturn200WhenNoAnswersAndQuestionExists() throws Exception {
+    when(answerService.findAllQuestionAnswers(anyLong())).thenReturn(new ArrayList<>());
+
+    mockMvc.perform(get("/api/v1/questions/1/answers"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[*]", empty()));
   }
 }

@@ -16,6 +16,9 @@ import io.github.korzepadawid.springquoraclone.repository.AnswerRepository;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
 import io.github.korzepadawid.springquoraclone.service.AuthService;
 import io.github.korzepadawid.springquoraclone.util.MockTestData;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +43,7 @@ class AnswerServiceImplTest {
   private AnswerServiceImpl answerService;
 
   @Test
-  void shouldThrowQuestionNotFoundExceptionWhenQuestionDoesNotExist() {
+  void shouldThrowQuestionNotFoundAndStopAnsweringExceptionWhenQuestionDoesNotExist() {
     when(questionRepository.findById(anyLong())).thenReturn(Optional.empty());
 
     Throwable throwable = catchThrowable(() -> answerService.createAnswer(null, MockTestData.ID));
@@ -78,5 +81,41 @@ class AnswerServiceImplTest {
         .hasFieldOrPropertyWithValue("author.id", currentlyLogged.getId());
     assertThat(question.getAnswers().size()).isEqualTo(1);
     assertThat(answer.getQuestion()).isNotNull();
+  }
+
+  @Test
+  void shouldThrowQuestionNotFoundExceptionAndStopListingAnswersWhenQuestionDoesNotExist() {
+    when(questionRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    Throwable throwable = catchThrowable(
+        () -> answerService.findAllQuestionAnswers(MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(QuestionNotFoundException.class);
+  }
+
+  @Test
+  void shouldReturnEmptyListWhenZeroResults() {
+    Question question = MockTestData.returnsQuestion(true);
+    when(questionRepository.findById(anyLong())).thenReturn(Optional.of(question));
+    when(answerRepository.findByQuestion(any(Question.class))).thenReturn(new ArrayList<>());
+
+    List<AnswerReadDto> allQuestionAnswers = answerService.findAllQuestionAnswers(MockTestData.ID);
+
+    assertThat(allQuestionAnswers.size()).isEqualTo(0);
+  }
+
+  @Test
+  void shouldReturnResultsWhenThereAreMatches() {
+    List<Answer> answers = Arrays.asList(
+        MockTestData.returnsAnswer(),
+        MockTestData.returnsAnswer()
+    );
+    Question question = MockTestData.returnsQuestion(true);
+    when(questionRepository.findById(anyLong())).thenReturn(Optional.of(question));
+    when(answerRepository.findByQuestion(any(Question.class))).thenReturn(answers);
+
+    List<AnswerReadDto> allQuestionAnswers = answerService.findAllQuestionAnswers(MockTestData.ID);
+
+    assertThat(allQuestionAnswers.size()).isEqualTo(answers.size());
   }
 }
