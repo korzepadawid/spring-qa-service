@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone.service;
+package io.github.korzepadawid.springquoraclone.service.impl;
 
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
@@ -8,6 +8,7 @@ import io.github.korzepadawid.springquoraclone.exception.UserAlreadyExistsExcept
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
 import io.github.korzepadawid.springquoraclone.security.JwtProvider;
+import io.github.korzepadawid.springquoraclone.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.AuthenticationManager;

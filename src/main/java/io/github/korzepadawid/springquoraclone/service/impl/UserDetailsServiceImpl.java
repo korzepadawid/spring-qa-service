@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone.service;
+package io.github.korzepadawid.springquoraclone.service.impl;
 
 import static java.util.Collections.singletonList;
 

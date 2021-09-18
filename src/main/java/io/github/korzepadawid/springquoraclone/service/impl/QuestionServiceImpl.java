@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone.service;
+package io.github.korzepadawid.springquoraclone.service.impl;
 
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionUpdateDto;
@@ -7,6 +7,8 @@ import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundExcepti
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
+import io.github.korzepadawid.springquoraclone.service.AuthService;
+import io.github.korzepadawid.springquoraclone.service.QuestionService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
