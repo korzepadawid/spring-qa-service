@@ -1,10 +1,13 @@
 package io.github.korzepadawid.springquoraclone.util;
 
+import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
+import io.github.korzepadawid.springquoraclone.dto.AnswerWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
+import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 
@@ -58,7 +61,27 @@ public abstract class MockTestData {
         .build();
   }
 
-  public static QuestionReadDto returnsQuestionReadDto(boolean anonymous){
+  public static QuestionReadDto returnsQuestionReadDto(boolean anonymous) {
     return new QuestionReadDto(returnsQuestion(anonymous));
+  }
+
+  public static Answer returnsAnswer() {
+    return Answer.builder()
+        .author(returnsAppUser())
+        .question(returnsQuestion(true))
+        .id(ID)
+        .text("I don't know.")
+        .build();
+  }
+
+  public static AnswerWriteDto returnsAnswerWriteDto() {
+    Answer answer = returnsAnswer();
+    return AnswerWriteDto.builder()
+        .text(answer.getText())
+        .build();
+  }
+
+  public static AnswerReadDto returnsAnswerReadDto() {
+    return new AnswerReadDto(returnsAnswer());
   }
 }

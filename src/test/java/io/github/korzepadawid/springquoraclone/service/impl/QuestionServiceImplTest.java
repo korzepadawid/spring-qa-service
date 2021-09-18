@@ -9,16 +9,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionUpdateDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
-import io.github.korzepadawid.springquoraclone.exception.ResourceNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
 import io.github.korzepadawid.springquoraclone.service.AuthService;
+import io.github.korzepadawid.springquoraclone.util.MockTestData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +79,7 @@ class QuestionServiceImplTest {
 
     Throwable throwable = catchThrowable(() -> questionService.getQuestionById(MockTestData.ID));
 
-    assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
+    assertThat(throwable).isInstanceOf(QuestionNotFoundException.class);
   }
 
   @Test
