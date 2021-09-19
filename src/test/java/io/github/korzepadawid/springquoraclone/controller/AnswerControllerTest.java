@@ -5,8 +5,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,5 +127,39 @@ class AnswerControllerTest {
     mockMvc.perform(get("/api/v1/answers/1"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.text", is(answerReadDto.getText())));
+  }
+
+  @Test
+  void shouldReturn404AndStopDeletingWhenAnswerDoesNotExistForCurrentUser() throws Exception {
+    doThrow(new AnswerNotFoundException(MockTestData.ID)).when(answerService)
+        .deleteAnswerById(anyLong());
+
+    mockMvc.perform(delete("/api/v1/answers/1"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn204WhenDeletedAnswer() throws Exception {
+    mockMvc.perform(delete("/api/v1/answers/1"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldReturn404AndStopUpdatingWhenAnswerDoesNotExistForCurrentUser() throws Exception {
+    doThrow(new AnswerNotFoundException(MockTestData.ID)).when(answerService)
+        .updateAnswerById(any(AnswerWriteDto.class),anyLong());
+
+    mockMvc.perform(patch("/api/v1/answers/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(MockTestData.returnsAnswerWriteDto())))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn204WhenUpdatedAnswer() throws Exception {
+    mockMvc.perform(patch("/api/v1/answers/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(JsonMapper.toJson(MockTestData.returnsAnswerWriteDto())))
+        .andExpect(status().isNoContent());
   }
 }

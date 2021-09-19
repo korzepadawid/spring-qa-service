@@ -11,4 +11,8 @@ public interface AnswerService {
   List<AnswerReadDto> findAllQuestionAnswers(Long questionId);
 
   AnswerReadDto getAnswerById(Long answerId);
+
+  void deleteAnswerById(Long answerId);
+
+  void updateAnswerById(AnswerWriteDto answerWriteDto, Long answerId);
 }

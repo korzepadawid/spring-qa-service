@@ -4,10 +4,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
+import io.github.korzepadawid.springquoraclone.dto.AnswerWriteDto;
 import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.Answer;
@@ -140,5 +143,73 @@ class AnswerServiceImplTest {
         .isNotNull()
         .hasFieldOrPropertyWithValue("id", answer.getId())
         .hasFieldOrPropertyWithValue("text", answer.getText());
+  }
+
+  @Test
+  void shouldThrowAnswerNotFoundExceptionAndStopDeletingWhenAnswerDoesNotExistForCurrentUser() {
+    when(answerRepository.findByIdAndAuthor(anyLong(), any(AppUser.class)))
+        .thenReturn(Optional.empty());
+    when(authService.getCurrentlyLoggedUser()).thenReturn(MockTestData.returnsAppUser());
+
+    Throwable throwable = catchThrowable(() -> answerService.deleteAnswerById(MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(AnswerNotFoundException.class);
+    verify(answerRepository, times(0)).delete(any(Answer.class));
+  }
+
+  @Test
+  void shouldDeleteAnswerWhenAnswerExistsForCurrentUser() {
+    Answer answer = MockTestData.returnsAnswer();
+    when(answerRepository.findByIdAndAuthor(anyLong(), any(AppUser.class)))
+        .thenReturn(Optional.of(answer));
+    when(authService.getCurrentlyLoggedUser()).thenReturn(MockTestData.returnsAppUser());
+
+    answerService.deleteAnswerById(MockTestData.ID);
+
+    verify(answerRepository, times(1)).delete(answer);
+  }
+
+  @Test
+  void shouldThrowAnswerNotFoundExceptionAndStopUpdatingWhenAnswerDoesNotExistForCurrentUser() {
+    when(answerRepository.findByIdAndAuthor(anyLong(), any(AppUser.class)))
+        .thenReturn(Optional.empty());
+    when(authService.getCurrentlyLoggedUser()).thenReturn(MockTestData.returnsAppUser());
+
+    Throwable throwable = catchThrowable(
+        () -> answerService.updateAnswerById(null, MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(AnswerNotFoundException.class);
+  }
+
+  @Test
+  void shouldNotUpdateAnswerWhenChangesAreNull() {
+    Answer answer = MockTestData.returnsAnswer();
+    final String expectedText = answer.getText();
+    when(authService.getCurrentlyLoggedUser()).thenReturn(MockTestData.returnsAppUser());
+    when(answerRepository.findByIdAndAuthor(anyLong(), any(AppUser.class)))
+        .thenReturn(Optional.of(answer));
+
+    answerService.updateAnswerById(null, MockTestData.ID);
+
+    assertThat(answer)
+        .isNotNull()
+        .hasFieldOrPropertyWithValue("text", expectedText);
+  }
+
+  @Test
+  void shouldUpdateAnswerWhenChangesAreNotNull() {
+    Answer answer = MockTestData.returnsAnswer();
+    AnswerWriteDto answerWriteDto = AnswerWriteDto.builder()
+        .text("it's a new value, isn't it?")
+        .build();
+    when(answerRepository.findByIdAndAuthor(anyLong(), any(AppUser.class)))
+        .thenReturn(Optional.of(answer));
+    when(authService.getCurrentlyLoggedUser()).thenReturn(MockTestData.returnsAppUser());
+
+    answerService.updateAnswerById(answerWriteDto, MockTestData.ID);
+
+    assertThat(answer)
+        .isNotNull()
+        .hasFieldOrPropertyWithValue("text", answerWriteDto.getText());
   }
 }

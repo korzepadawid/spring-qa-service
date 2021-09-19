@@ -58,6 +58,28 @@ public class AnswerServiceImpl implements AnswerService {
         .orElseThrow(() -> new AnswerNotFoundException(answerId));
   }
 
+  @Transactional
+  @Override
+  public void deleteAnswerById(Long answerId) {
+    Answer answer = findAnswerByIdForCurrentUser(answerId);
+    answerRepository.delete(answer);
+  }
+
+  @Transactional
+  @Override
+  public void updateAnswerById(AnswerWriteDto answerWriteDto, Long answerId) {
+    Answer answer = findAnswerByIdForCurrentUser(answerId);
+    if (answerWriteDto != null && answerWriteDto.getText() != null) {
+      answer.setText(answerWriteDto.getText());
+    }
+  }
+
+  private Answer findAnswerByIdForCurrentUser(Long answerId) {
+    AppUser appUser = authService.getCurrentlyLoggedUser();
+    return answerRepository.findByIdAndAuthor(answerId, appUser)
+        .orElseThrow(() -> new AnswerNotFoundException(answerId));
+  }
+
   private Answer mapDtoToEntity(AnswerWriteDto answerWriteDto) {
     return Answer.builder()
         .text(answerWriteDto.getText())
