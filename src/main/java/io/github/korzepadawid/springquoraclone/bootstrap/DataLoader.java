@@ -1,7 +1,9 @@
 package io.github.korzepadawid.springquoraclone.bootstrap;
 
+import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
+import io.github.korzepadawid.springquoraclone.repository.AnswerRepository;
 import io.github.korzepadawid.springquoraclone.repository.AppUserRepository;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class DataLoader implements CommandLineRunner {
 
   private final AppUserRepository appUserRepository;
   private final QuestionRepository questionRepository;
+  private final AnswerRepository answerRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -47,11 +50,27 @@ public class DataLoader implements CommandLineRunner {
         .description("Please, be honest.")
         .build());
 
-    questionRepository.save(Question.builder()
+    Question savedQuestion = questionRepository.save(Question.builder()
         .author(jdoe)
         .anonymous(false)
         .title("What is the most beautiful place on the earth?")
         .description("Please, share your traveling destinations.")
         .build());
+
+    answerRepository.save(
+        Answer.builder()
+            .text("Rome")
+            .author(bmurray)
+            .question(savedQuestion)
+            .build()
+    );
+
+    answerRepository.save(
+        Answer.builder()
+            .text("Paris")
+            .author(jdoe)
+            .question(savedQuestion)
+            .build()
+    );
   }
 }

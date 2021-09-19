@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
+import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
@@ -117,5 +118,27 @@ class AnswerServiceImplTest {
     List<AnswerReadDto> allQuestionAnswers = answerService.findAllQuestionAnswers(MockTestData.ID);
 
     assertThat(allQuestionAnswers.size()).isEqualTo(answers.size());
+  }
+
+  @Test
+  void shouldThrowAnswerNotFoundExceptionWhenAnswerWithProvidedIdDoesNotExist() {
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    Throwable throwable = catchThrowable(() -> answerService.getAnswerById(MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(AnswerNotFoundException.class);
+  }
+
+  @Test
+  void shouldReturnAnswerWhenAnswerWithProvidedIdExists() {
+    Answer answer = MockTestData.returnsAnswer();
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
+
+    AnswerReadDto answerReadDto = answerService.getAnswerById(MockTestData.ID);
+
+    assertThat(answerReadDto)
+        .isNotNull()
+        .hasFieldOrPropertyWithValue("id", answer.getId())
+        .hasFieldOrPropertyWithValue("text", answer.getText());
   }
 }

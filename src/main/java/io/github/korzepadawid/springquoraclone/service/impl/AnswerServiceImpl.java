@@ -2,6 +2,7 @@ package io.github.korzepadawid.springquoraclone.service.impl;
 
 import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AnswerWriteDto;
+import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
@@ -48,6 +49,13 @@ public class AnswerServiceImpl implements AnswerService {
             .map(AnswerReadDto::new)
             .collect(Collectors.toList()))
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
+  }
+
+  @Override
+  public AnswerReadDto getAnswerById(Long answerId) {
+    return answerRepository.findById(answerId)
+        .map(AnswerReadDto::new)
+        .orElseThrow(() -> new AnswerNotFoundException(answerId));
   }
 
   private Answer mapDtoToEntity(AnswerWriteDto answerWriteDto) {

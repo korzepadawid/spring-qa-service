@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AnswerWriteDto;
+import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
 import io.github.korzepadawid.springquoraclone.exception.GlobalExceptionHandler;
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.service.AnswerService;
@@ -104,5 +105,24 @@ class AnswerControllerTest {
     mockMvc.perform(get("/api/v1/questions/1/answers"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[*]", empty()));
+  }
+
+  @Test
+  void shouldReturn404WhenAnswerDoesNotExist() throws Exception {
+    when(answerService.getAnswerById(anyLong()))
+        .thenThrow(new AnswerNotFoundException(MockTestData.ID));
+
+    mockMvc.perform(get("/api/v1/answers/1"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn200AndAnswerWhenAnswerExists() throws Exception {
+    AnswerReadDto answerReadDto = MockTestData.returnsAnswerReadDto();
+    when(answerService.getAnswerById(anyLong())).thenReturn(answerReadDto);
+
+    mockMvc.perform(get("/api/v1/answers/1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.text", is(answerReadDto.getText())));
   }
 }

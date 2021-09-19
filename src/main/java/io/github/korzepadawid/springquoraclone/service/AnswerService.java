@@ -9,4 +9,6 @@ public interface AnswerService {
   AnswerReadDto createAnswer(AnswerWriteDto answerWriteDto, Long questionId);
 
   List<AnswerReadDto> findAllQuestionAnswers(Long questionId);
+
+  AnswerReadDto getAnswerById(Long answerId);
 }

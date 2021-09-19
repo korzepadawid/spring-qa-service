@@ -37,12 +37,14 @@ public class AnswerController {
 
   @GetMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.OK)
-  public void getOneAnswer(@PathVariable Long answerId) {
+  public AnswerReadDto getOneAnswer(@PathVariable Long answerId) {
+    return answerService.getAnswerById(answerId);
   }
 
   @PatchMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateAnswer(@PathVariable Long answerId) {
+    return;
   }
 
   @DeleteMapping("/api/v1/answers/{answerId}")
