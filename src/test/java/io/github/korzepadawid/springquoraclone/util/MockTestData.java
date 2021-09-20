@@ -7,9 +7,12 @@ import io.github.korzepadawid.springquoraclone.dto.AppUserWriteDto;
 import io.github.korzepadawid.springquoraclone.dto.LoginDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionReadDto;
 import io.github.korzepadawid.springquoraclone.dto.QuestionWriteDto;
+import io.github.korzepadawid.springquoraclone.dto.VoteDto;
 import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Question;
+import io.github.korzepadawid.springquoraclone.model.Vote;
+import io.github.korzepadawid.springquoraclone.model.VoteType;
 
 public abstract class MockTestData {
 
@@ -83,5 +86,18 @@ public abstract class MockTestData {
 
   public static AnswerReadDto returnsAnswerReadDto() {
     return new AnswerReadDto(returnsAnswer());
+  }
+
+  public static Vote returnsVote(VoteType voteType){
+    return Vote.builder()
+        .id(MockTestData.ID)
+        .voteType(voteType)
+        .answer(MockTestData.returnsAnswer())
+        .appUser(MockTestData.returnsAppUser())
+        .build();
+  }
+
+  public static VoteDto returnsVoteDto(VoteType voteType){
+    return new VoteDto(voteType);
   }
 }

@@ -33,5 +33,5 @@ public class Vote extends BaseEntity implements Serializable {
   private VoteType voteType;
 
   @Embedded
-  private DateAudit dateAudit = new DateAudit();
+  private final DateAudit dateAudit = new DateAudit();
 }

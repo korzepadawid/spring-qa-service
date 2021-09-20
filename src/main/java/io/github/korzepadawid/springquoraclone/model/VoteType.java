@@ -1,11 +1,11 @@
 package io.github.korzepadawid.springquoraclone.model;
 
+import io.github.korzepadawid.springquoraclone.exception.InvalidVoteDirectionException;
 import java.io.Serializable;
 import java.util.Arrays;
 
 public enum VoteType implements Serializable {
-  UPVOTE(1), DOWN_VOTE(-1),
-  ;
+  UPVOTE(1), DOWN_VOTE(-1);
 
   private int direction;
 
@@ -17,7 +17,7 @@ public enum VoteType implements Serializable {
     return Arrays.stream(VoteType.values())
         .filter(value -> value.getDirection().equals(direction))
         .findAny()
-        .orElseThrow(() -> new RuntimeException("Vote not found"));
+        .orElseThrow(InvalidVoteDirectionException::new);
   }
 
   public Integer getDirection() {

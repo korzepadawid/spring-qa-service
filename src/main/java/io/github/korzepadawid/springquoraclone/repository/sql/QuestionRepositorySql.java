@@ -14,7 +14,6 @@ public interface QuestionRepositorySql extends QuestionRepository, JpaRepository
 
   Optional<Question> findByIdAndAuthor(Long id, AppUser author);
 
-  // Avoiding n + 1 issue
   @Query("select q from Question q join fetch q.author a"
       + " where concat(lower(q.title) , lower(q.description) ) like  lower(concat('%', :keyword,'%')) ")
   List<Question> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
