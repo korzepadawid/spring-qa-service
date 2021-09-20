@@ -4,10 +4,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
+import io.github.korzepadawid.springquoraclone.exception.VoteNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
 import io.github.korzepadawid.springquoraclone.model.Vote;
@@ -80,5 +83,44 @@ class VoteServiceImplTest {
 
     assertThat(vote.getVoteType()).isEqualTo(VoteType.UP_VOTE);
     assertThat(vote.getAppUser()).isNotNull();
+  }
+
+  @Test
+  void shouldThrowAnswerNotFoundExceptionAndStopRemovingWhenAnswerDoesNotExist() {
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+    Throwable throwable = catchThrowable(() -> voteService.removeVote(MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(AnswerNotFoundException.class);
+    verifyNoInteractions(voteRepository);
+  }
+
+  @Test
+  void shouldThrowVoteNotFoundExceptionAndStopRemovingWhenVoteDoesNotExist() {
+    Answer answer = MockTestData.returnsAnswer();
+    AppUser appUser = MockTestData.returnsAppUser();
+    when(authService.getCurrentlyLoggedUser()).thenReturn(appUser);
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
+    when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
+        .thenReturn(Optional.empty());
+
+    Throwable throwable = catchThrowable(() -> voteService.removeVote(MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(VoteNotFoundException.class);
+  }
+
+  @Test
+  void shouldRemoveVoteWhenVoteAndAnswerExist() {
+    Answer answer = MockTestData.returnsAnswer();
+    AppUser appUser = MockTestData.returnsAppUser();
+    Vote vote = MockTestData.returnsVote(VoteType.DOWN_VOTE);
+    when(authService.getCurrentlyLoggedUser()).thenReturn(appUser);
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
+    when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
+        .thenReturn(Optional.of(vote));
+
+    voteService.removeVote(MockTestData.ID);
+
+    verify(voteRepository, times(1)).delete(any(Vote.class));
   }
 }

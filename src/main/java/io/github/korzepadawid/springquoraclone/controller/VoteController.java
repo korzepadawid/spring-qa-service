@@ -28,6 +28,7 @@ public class VoteController {
   @DeleteMapping("/api/v1/answers/{answerId}/votes")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void removeVote(@PathVariable Long answerId) {
+    voteService.removeVote(answerId);
   }
 
   @GetMapping("/api/v1/answers/{answerId}/votes/me")

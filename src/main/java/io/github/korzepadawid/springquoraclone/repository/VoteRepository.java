@@ -10,4 +10,6 @@ public interface VoteRepository {
   Optional<Vote> findByAnswerAndAppUser(Answer answer, AppUser appUser);
 
   Vote save(Vote vote);
+
+  void delete(Vote vote);
 }
