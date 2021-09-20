@@ -53,7 +53,7 @@ class VoteServiceImplTest {
   @Test
   void shouldUpdateVoteWhenVoteAlreadyExists() {
     Answer answer = MockTestData.returnsAnswer();
-    Vote vote = MockTestData.returnsVote(VoteType.UPVOTE);
+    Vote vote = MockTestData.returnsVote(VoteType.UP_VOTE);
     AppUser appUser = MockTestData.returnsAppUser();
     when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
     when(authService.getCurrentlyLoggedUser()).thenReturn(appUser);
@@ -69,16 +69,16 @@ class VoteServiceImplTest {
   @Test
   void shouldCreateNewVoteWhenVoteDoesNotExist() {
     Answer answer = MockTestData.returnsAnswer();
-    Vote vote = MockTestData.returnsVote(VoteType.UPVOTE);
+    Vote vote = MockTestData.returnsVote(VoteType.UP_VOTE);
     AppUser appUser = MockTestData.returnsAppUser();
     when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
     when(authService.getCurrentlyLoggedUser()).thenReturn(appUser);
     when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
         .thenReturn(Optional.empty());
 
-    voteService.createVote(MockTestData.returnsVoteDto(VoteType.UPVOTE), MockTestData.ID);
+    voteService.createVote(MockTestData.returnsVoteDto(VoteType.UP_VOTE), MockTestData.ID);
 
-    assertThat(vote.getVoteType()).isEqualTo(VoteType.UPVOTE);
+    assertThat(vote.getVoteType()).isEqualTo(VoteType.UP_VOTE);
     assertThat(vote.getAppUser()).isNotNull();
   }
 }
