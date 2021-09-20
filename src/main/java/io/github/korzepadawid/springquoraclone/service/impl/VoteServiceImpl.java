@@ -49,9 +49,14 @@ public class VoteServiceImpl implements VoteService {
         });
   }
 
+  @Transactional
   @Override
   public VoteDto checkVote(Long answerId) {
-    return null;
+    Answer answer = getAnswerById(answerId);
+    AppUser currentlyLogged = authService.getCurrentlyLoggedUser();
+    return voteRepository.findByAnswerAndAppUser(answer, currentlyLogged)
+        .map(VoteDto::new)
+        .orElseThrow(() -> new VoteNotFoundException(answerId, currentlyLogged.getUsername()));
   }
 
   private Answer getAnswerById(Long answerId) {

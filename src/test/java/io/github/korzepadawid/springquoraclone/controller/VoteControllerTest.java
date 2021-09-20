@@ -1,10 +1,14 @@
 package io.github.korzepadawid.springquoraclone.controller;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.github.korzepadawid.springquoraclone.dto.VoteDto;
@@ -83,5 +87,32 @@ class VoteControllerTest {
   void shouldReturn204WhenVoteRemovedSuccessfully() throws Exception {
     mockMvc.perform(delete("/api/v1/answers/1/votes"))
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldReturn404WhenVoteDoesNotExist() throws Exception {
+    when(voteService.checkVote(anyLong()))
+        .thenThrow(new VoteNotFoundException(MockTestData.ID, "username"));
+
+    mockMvc.perform(get("/api/v1/answers/1/votes/me"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn404WhenAnswerDoesNotExist() throws Exception {
+    when(voteService.checkVote(anyLong())).thenThrow(new AnswerNotFoundException(MockTestData.ID));
+
+    mockMvc.perform(get("/api/v1/answers/1/votes/me"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn200WhenVoteExists() throws Exception {
+    VoteDto voteDto = MockTestData.returnsVoteDto(VoteType.DOWN_VOTE);
+    when(voteService.checkVote(anyLong())).thenReturn(voteDto);
+
+    mockMvc.perform(get("/api/v1/answers/1/votes/me"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.voteType", is(voteDto.getVoteType().toString())));
   }
 }

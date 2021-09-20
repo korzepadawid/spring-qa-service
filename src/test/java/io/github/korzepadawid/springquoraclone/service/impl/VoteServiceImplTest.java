@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import io.github.korzepadawid.springquoraclone.dto.VoteDto;
 import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
 import io.github.korzepadawid.springquoraclone.exception.VoteNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.Answer;
@@ -122,5 +123,34 @@ class VoteServiceImplTest {
     voteService.removeVote(MockTestData.ID);
 
     verify(voteRepository, times(1)).delete(any(Vote.class));
+  }
+
+  @Test
+  void shouldThrowVoteNotFoundExceptionWhenVoteDoesNotExist() {
+    Answer answer = MockTestData.returnsAnswer();
+    AppUser appUser = MockTestData.returnsAppUser();
+    when(authService.getCurrentlyLoggedUser()).thenReturn(appUser);
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
+    when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
+        .thenReturn(Optional.empty());
+
+    Throwable throwable = catchThrowable(() -> voteService.checkVote(MockTestData.ID));
+
+    assertThat(throwable).isInstanceOf(VoteNotFoundException.class);
+  }
+
+  @Test
+  void shouldReturnVoteDtoWhenVoteExists(){
+    Answer answer = MockTestData.returnsAnswer();
+    AppUser appUser = MockTestData.returnsAppUser();
+    Vote vote = MockTestData.returnsVote(VoteType.DOWN_VOTE);
+    when(authService.getCurrentlyLoggedUser()).thenReturn(appUser);
+    when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
+    when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
+        .thenReturn(Optional.of(vote));
+
+    VoteDto voteDto = voteService.checkVote(MockTestData.ID);
+
+    assertThat(voteDto.getVoteType()).isEqualTo(vote.getVoteType());
   }
 }

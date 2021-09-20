@@ -33,6 +33,7 @@ public class VoteController {
 
   @GetMapping("/api/v1/answers/{answerId}/votes/me")
   @ResponseStatus(HttpStatus.OK)
-  public void checkVote(@PathVariable Long answerId) {
+  public VoteDto checkVote(@PathVariable Long answerId) {
+    return voteService.checkVote(answerId);
   }
 }
