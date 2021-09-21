@@ -53,9 +53,4 @@ public class Question extends BaseEntity implements Serializable {
 
   @Embedded
   private final DateAudit dateAudit = new DateAudit();
-
-  public void addAnswer(Answer answer){
-    answers.add(answer);
-    answer.setQuestion(this);
-  }
 }

@@ -83,7 +83,6 @@ class AnswerServiceImplTest {
         .isNotNull()
         .hasFieldOrPropertyWithValue("text", answer.getText())
         .hasFieldOrPropertyWithValue("author.id", currentlyLogged.getId());
-    assertThat(question.getAnswers().size()).isEqualTo(1);
     assertThat(answer.getQuestion()).isNotNull();
   }
 

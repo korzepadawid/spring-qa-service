@@ -33,9 +33,8 @@ public class AnswerServiceImpl implements AnswerService {
           Answer answer = mapDtoToEntity(answerWriteDto);
           assert answer != null;
           answer.setAuthor(currentlyLoggedUser);
-          Answer savedAnswer = answerRepository.save(answer);
-          question.addAnswer(savedAnswer);
-          return new AnswerReadDto(savedAnswer);
+          answer.setQuestion(question);
+          return new AnswerReadDto(answerRepository.save(answer));
         })
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
   }
