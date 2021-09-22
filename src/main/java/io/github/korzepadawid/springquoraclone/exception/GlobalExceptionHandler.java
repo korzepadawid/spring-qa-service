@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(UserAlreadyExistsException.class)
+  @ExceptionHandler(BusinessLogicException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorDto handleUserAlreadyExistsException(
-      UserAlreadyExistsException exception) {
+  public ErrorDto handleBusinessLogicException(
+      BusinessLogicException exception) {
     return ErrorDto.builder()
         .message(exception.getMessage())
         .code(HttpStatus.BAD_REQUEST.value())
@@ -30,15 +30,13 @@ public class GlobalExceptionHandler {
   public ErrorDto handleMethodArgumentNotValidException(
       MethodArgumentNotValidException exception) {
     ErrorDto errorDto = new ErrorDto(HttpStatus.BAD_REQUEST.value(),
-        "Validation error occurred.");
-
+        "A validation error has occurred.");
     exception.getBindingResult()
         .getAllErrors()
         .forEach(error -> errorDto.getErrors().put(
             ((FieldError) error).getField(),
             error.getDefaultMessage()
         ));
-
     return errorDto;
   }
 
