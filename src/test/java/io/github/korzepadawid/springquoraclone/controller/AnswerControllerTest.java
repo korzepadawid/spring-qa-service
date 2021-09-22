@@ -80,7 +80,7 @@ class AnswerControllerTest {
 
   @Test
   void shouldReturn404AndStopListingAnswersWhenQuestionNotFound() throws Exception {
-    when(answerService.findAllQuestionAnswers(anyLong()))
+    when(answerService.findAllAnswersByQuestionId(anyLong()))
         .thenThrow(new QuestionNotFoundException(MockTestData.ID));
 
     mockMvc.perform(get("/api/v1/questions/1/answers"))
@@ -94,7 +94,7 @@ class AnswerControllerTest {
         MockTestData.returnsAnswerReadDto(),
         MockTestData.returnsAnswerReadDto()
     );
-    when(answerService.findAllQuestionAnswers(anyLong())).thenReturn(answerReadDtos);
+    when(answerService.findAllAnswersByQuestionId(anyLong())).thenReturn(answerReadDtos);
 
     mockMvc.perform(get("/api/v1/questions/1/answers"))
         .andExpect(status().isOk())
@@ -103,7 +103,7 @@ class AnswerControllerTest {
 
   @Test
   void shouldReturn200WhenNoAnswersAndQuestionExists() throws Exception {
-    when(answerService.findAllQuestionAnswers(anyLong())).thenReturn(new ArrayList<>());
+    when(answerService.findAllAnswersByQuestionId(anyLong())).thenReturn(new ArrayList<>());
 
     mockMvc.perform(get("/api/v1/questions/1/answers"))
         .andExpect(status().isOk())
@@ -112,7 +112,7 @@ class AnswerControllerTest {
 
   @Test
   void shouldReturn404WhenAnswerDoesNotExist() throws Exception {
-    when(answerService.getAnswerById(anyLong()))
+    when(answerService.findAnswerById(anyLong()))
         .thenThrow(new AnswerNotFoundException(MockTestData.ID));
 
     mockMvc.perform(get("/api/v1/answers/1"))
@@ -122,7 +122,7 @@ class AnswerControllerTest {
   @Test
   void shouldReturn200AndAnswerWhenAnswerExists() throws Exception {
     AnswerReadDto answerReadDto = MockTestData.returnsAnswerReadDto();
-    when(answerService.getAnswerById(anyLong())).thenReturn(answerReadDto);
+    when(answerService.findAnswerById(anyLong())).thenReturn(answerReadDto);
 
     mockMvc.perform(get("/api/v1/answers/1"))
         .andExpect(status().isOk())

@@ -101,7 +101,7 @@ class QuestionControllerTest {
 
   @Test
   void shouldReturn404WhenQuestionDoesNotExist() throws Exception {
-    when(questionService.getQuestionById(anyLong()))
+    when(questionService.findQuestionById(anyLong()))
         .thenThrow(new QuestionNotFoundException(MockTestData.ID));
 
     mockMvc.perform(get(singleQuestionUrl(MockTestData.ID)))
@@ -118,7 +118,7 @@ class QuestionControllerTest {
   @Test
   void shouldReturnQuestionWhenQuestionExists() throws Exception {
     QuestionReadDto questionReadDto = MockTestData.returnsQuestionReadDto(false);
-    when(questionService.getQuestionById(anyLong())).thenReturn(questionReadDto);
+    when(questionService.findQuestionById(anyLong())).thenReturn(questionReadDto);
 
     mockMvc.perform(get(singleQuestionUrl(MockTestData.ID)))
         .andExpect(status().isOk())
@@ -178,7 +178,7 @@ class QuestionControllerTest {
 
   @Test
   void shouldReturn200WhenEmptyResult() throws Exception {
-    when(questionService.findQuestions(anyString(), anyInt())).thenReturn(new ArrayList<>());
+    when(questionService.findAllQuestions(anyString(), anyInt())).thenReturn(new ArrayList<>());
 
     mockMvc.perform(get("/api/v1/questions"))
         .andExpect(status().isOk())
@@ -191,7 +191,7 @@ class QuestionControllerTest {
         new QuestionReadDto(),
         new QuestionReadDto()
     );
-    when(questionService.findQuestions(anyString(), anyInt()))
+    when(questionService.findAllQuestions(anyString(), anyInt()))
         .thenReturn(questionReadDtos);
 
     mockMvc.perform(get("/api/v1/questions?keyword=test&page=1"))

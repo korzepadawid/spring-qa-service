@@ -27,13 +27,13 @@ public class VoteController {
 
   @DeleteMapping("/api/v1/answers/{answerId}/votes")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void removeVote(@PathVariable Long answerId) {
-    voteService.removeVote(answerId);
+  public void deleteVoteById(@PathVariable Long answerId) {
+    voteService.deleteVoteById(answerId);
   }
 
   @GetMapping("/api/v1/answers/{answerId}/votes/me")
   @ResponseStatus(HttpStatus.OK)
-  public VoteDto checkVote(@PathVariable Long answerId) {
-    return voteService.checkVote(answerId);
+  public VoteDto findVoteByAnswerId(@PathVariable Long answerId) {
+    return voteService.findVoteByAnswerId(answerId);
   }
 }

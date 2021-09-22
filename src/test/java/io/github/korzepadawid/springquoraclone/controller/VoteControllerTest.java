@@ -68,7 +68,7 @@ class VoteControllerTest {
 
   @Test
   void shouldReturn404AndStopRemovingWhenAnswerDoesNotExist() throws Exception {
-    doThrow(new AnswerNotFoundException(MockTestData.ID)).when(voteService).removeVote(anyLong());
+    doThrow(new AnswerNotFoundException(MockTestData.ID)).when(voteService).deleteVoteById(anyLong());
 
     mockMvc.perform(delete("/api/v1/answers/1/votes"))
         .andExpect(status().isNotFound());
@@ -77,7 +77,7 @@ class VoteControllerTest {
   @Test
   void shouldReturn404AndStopRemovingWhenVoteDoesNotExist() throws Exception {
     doThrow(new VoteNotFoundException(MockTestData.ID, "usernamegoeshere")).when(voteService)
-        .removeVote(anyLong());
+        .deleteVoteById(anyLong());
 
     mockMvc.perform(delete("/api/v1/answers/1/votes"))
         .andExpect(status().isNotFound());
@@ -91,7 +91,7 @@ class VoteControllerTest {
 
   @Test
   void shouldReturn404WhenVoteDoesNotExist() throws Exception {
-    when(voteService.checkVote(anyLong()))
+    when(voteService.findVoteByAnswerId(anyLong()))
         .thenThrow(new VoteNotFoundException(MockTestData.ID, "username"));
 
     mockMvc.perform(get("/api/v1/answers/1/votes/me"))
@@ -100,7 +100,7 @@ class VoteControllerTest {
 
   @Test
   void shouldReturn404WhenAnswerDoesNotExist() throws Exception {
-    when(voteService.checkVote(anyLong())).thenThrow(new AnswerNotFoundException(MockTestData.ID));
+    when(voteService.findVoteByAnswerId(anyLong())).thenThrow(new AnswerNotFoundException(MockTestData.ID));
 
     mockMvc.perform(get("/api/v1/answers/1/votes/me"))
         .andExpect(status().isNotFound());
@@ -109,7 +109,7 @@ class VoteControllerTest {
   @Test
   void shouldReturn200WhenVoteExists() throws Exception {
     VoteDto voteDto = MockTestData.returnsVoteDto(VoteType.DOWN_VOTE);
-    when(voteService.checkVote(anyLong())).thenReturn(voteDto);
+    when(voteService.findVoteByAnswerId(anyLong())).thenReturn(voteDto);
 
     mockMvc.perform(get("/api/v1/answers/1/votes/me"))
         .andExpect(status().isOk())

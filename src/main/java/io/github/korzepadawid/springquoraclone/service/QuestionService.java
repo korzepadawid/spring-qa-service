@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface QuestionService {
 
-  List<QuestionReadDto> findQuestions(String keyword, Integer page);
+  List<QuestionReadDto> findAllQuestions(String keyword, Integer page);
 
   QuestionReadDto createQuestion(QuestionWriteDto questionWriteDto);
 
-  QuestionReadDto getQuestionById(Long id);
+  QuestionReadDto findQuestionById(Long id);
 
   void updateQuestionById(QuestionUpdateDto updates, Long id);
 

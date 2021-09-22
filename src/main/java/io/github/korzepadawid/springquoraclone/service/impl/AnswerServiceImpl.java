@@ -6,6 +6,7 @@ import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException
 import io.github.korzepadawid.springquoraclone.exception.QuestionNotFoundException;
 import io.github.korzepadawid.springquoraclone.model.Answer;
 import io.github.korzepadawid.springquoraclone.model.AppUser;
+import io.github.korzepadawid.springquoraclone.model.Question;
 import io.github.korzepadawid.springquoraclone.repository.AnswerRepository;
 import io.github.korzepadawid.springquoraclone.repository.QuestionRepository;
 import io.github.korzepadawid.springquoraclone.service.AnswerService;
@@ -27,21 +28,17 @@ public class AnswerServiceImpl implements AnswerService {
   @Transactional
   @Override
   public AnswerReadDto createAnswer(AnswerWriteDto answerWriteDto, Long questionId) {
-    return questionRepository.findById(questionId)
-        .map(question -> {
-          AppUser currentlyLoggedUser = authService.getCurrentlyLoggedUser();
-          Answer answer = mapDtoToEntity(answerWriteDto);
-          assert answer != null;
-          answer.setAuthor(currentlyLoggedUser);
-          answer.setQuestion(question);
-          return new AnswerReadDto(answerRepository.save(answer));
-        })
+    Question question = questionRepository.findById(questionId)
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
+    Answer answer = mapDtoToEntity(answerWriteDto,
+        authService.getCurrentlyLoggedUser(),
+        question);
+    return new AnswerReadDto(answerRepository.save(answer));
   }
 
   @Transactional
   @Override
-  public List<AnswerReadDto> findAllQuestionAnswers(Long questionId) {
+  public List<AnswerReadDto> findAllAnswersByQuestionId(Long questionId) {
     return questionRepository.findById(questionId)
         .map(question -> answerRepository.findByQuestion(question)
             .stream()
@@ -51,7 +48,7 @@ public class AnswerServiceImpl implements AnswerService {
   }
 
   @Override
-  public AnswerReadDto getAnswerById(Long answerId) {
+  public AnswerReadDto findAnswerById(Long answerId) {
     return answerRepository.findById(answerId)
         .map(AnswerReadDto::new)
         .orElseThrow(() -> new AnswerNotFoundException(answerId));
@@ -73,15 +70,16 @@ public class AnswerServiceImpl implements AnswerService {
     }
   }
 
-  private Answer findAnswerByIdForCurrentUser(Long answerId) {
-    AppUser appUser = authService.getCurrentlyLoggedUser();
-    return answerRepository.findByIdAndAuthor(answerId, appUser)
-        .orElseThrow(() -> new AnswerNotFoundException(answerId));
-  }
-
-  private Answer mapDtoToEntity(AnswerWriteDto answerWriteDto) {
+  private Answer mapDtoToEntity(AnswerWriteDto answerWriteDto, AppUser appUser, Question question) {
     return Answer.builder()
         .text(answerWriteDto.getText())
+        .author(appUser)
+        .question(question)
         .build();
+  }
+
+  private Answer findAnswerByIdForCurrentUser(Long answerId) {
+    return answerRepository.findByIdAndAuthor(answerId, authService.getCurrentlyLoggedUser())
+        .orElseThrow(() -> new AnswerNotFoundException(answerId));
   }
 }

@@ -26,10 +26,10 @@ public class QuestionController {
 
   @GetMapping("/api/v1/questions")
   @ResponseStatus(HttpStatus.OK)
-  public List<QuestionReadDto> getAllQuestions(
+  public List<QuestionReadDto> findAllQuestions(
       @RequestParam(name = "keyword", defaultValue = "") String keyword,
       @RequestParam(name = "page", defaultValue = "1") Integer page) {
-    return questionService.findQuestions(keyword, page);
+    return questionService.findAllQuestions(keyword, page);
   }
 
   @PostMapping("/api/v1/questions")
@@ -40,8 +40,8 @@ public class QuestionController {
 
   @GetMapping("/api/v1/questions/{questionId}")
   @ResponseStatus(HttpStatus.OK)
-  public QuestionReadDto getQuestionById(@PathVariable Long questionId) {
-    return questionService.getQuestionById(questionId);
+  public QuestionReadDto findQuestionById(@PathVariable Long questionId) {
+    return questionService.findQuestionById(questionId);
   }
 
   @PatchMapping("/api/v1/questions/{questionId}")

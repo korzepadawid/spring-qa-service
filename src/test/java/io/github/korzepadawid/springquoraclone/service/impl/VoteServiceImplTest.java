@@ -90,7 +90,7 @@ class VoteServiceImplTest {
   void shouldThrowAnswerNotFoundExceptionAndStopRemovingWhenAnswerDoesNotExist() {
     when(answerRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-    Throwable throwable = catchThrowable(() -> voteService.removeVote(MockTestData.ID));
+    Throwable throwable = catchThrowable(() -> voteService.deleteVoteById(MockTestData.ID));
 
     assertThat(throwable).isInstanceOf(AnswerNotFoundException.class);
     verifyNoInteractions(voteRepository);
@@ -105,7 +105,7 @@ class VoteServiceImplTest {
     when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
         .thenReturn(Optional.empty());
 
-    Throwable throwable = catchThrowable(() -> voteService.removeVote(MockTestData.ID));
+    Throwable throwable = catchThrowable(() -> voteService.deleteVoteById(MockTestData.ID));
 
     assertThat(throwable).isInstanceOf(VoteNotFoundException.class);
   }
@@ -120,7 +120,7 @@ class VoteServiceImplTest {
     when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
         .thenReturn(Optional.of(vote));
 
-    voteService.removeVote(MockTestData.ID);
+    voteService.deleteVoteById(MockTestData.ID);
 
     verify(voteRepository, times(1)).delete(any(Vote.class));
   }
@@ -134,7 +134,7 @@ class VoteServiceImplTest {
     when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
         .thenReturn(Optional.empty());
 
-    Throwable throwable = catchThrowable(() -> voteService.checkVote(MockTestData.ID));
+    Throwable throwable = catchThrowable(() -> voteService.findVoteByAnswerId(MockTestData.ID));
 
     assertThat(throwable).isInstanceOf(VoteNotFoundException.class);
   }
@@ -149,7 +149,7 @@ class VoteServiceImplTest {
     when(voteRepository.findByAnswerAndAppUser(any(Answer.class), any(AppUser.class)))
         .thenReturn(Optional.of(vote));
 
-    VoteDto voteDto = voteService.checkVote(MockTestData.ID);
+    VoteDto voteDto = voteService.findVoteByAnswerId(MockTestData.ID);
 
     assertThat(voteDto.getVoteType()).isEqualTo(vote.getVoteType());
   }

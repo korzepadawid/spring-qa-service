@@ -24,33 +24,33 @@ public class AnswerController {
 
   @GetMapping("/api/v1/questions/{questionId}/answers")
   @ResponseStatus(HttpStatus.OK)
-  public List<AnswerReadDto> getAllQuestionAnswers(@PathVariable Long questionId) {
-    return answerService.findAllQuestionAnswers(questionId);
+  public List<AnswerReadDto> findAllAnswersByQuestionId(@PathVariable Long questionId) {
+    return answerService.findAllAnswersByQuestionId(questionId);
   }
 
   @PostMapping("/api/v1/questions/{questionId}/answers")
   @ResponseStatus(HttpStatus.CREATED)
-  public AnswerReadDto createAnswerToQuestion(@Valid @RequestBody AnswerWriteDto answerWriteDto,
+  public AnswerReadDto createAnswer(@Valid @RequestBody AnswerWriteDto answerWriteDto,
       @PathVariable Long questionId) {
     return answerService.createAnswer(answerWriteDto, questionId);
   }
 
   @GetMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.OK)
-  public AnswerReadDto getOneAnswer(@PathVariable Long answerId) {
-    return answerService.getAnswerById(answerId);
+  public AnswerReadDto findAnswerById(@PathVariable Long answerId) {
+    return answerService.findAnswerById(answerId);
   }
 
   @PatchMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void updateAnswer(@Valid @RequestBody AnswerWriteDto answerWriteDto,
+  public void updateAnswerById(@Valid @RequestBody AnswerWriteDto answerWriteDto,
       @PathVariable Long answerId) {
     answerService.updateAnswerById(answerWriteDto, answerId);
   }
 
   @DeleteMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteAnswer(@PathVariable Long answerId) {
+  public void deleteAnswerById(@PathVariable Long answerId) {
     answerService.deleteAnswerById(answerId);
   }
 }

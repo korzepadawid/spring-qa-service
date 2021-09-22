@@ -28,7 +28,7 @@ public class QuestionServiceImpl implements QuestionService {
   public static final Integer MAX_PAGE_LIMIT = 5;
 
   @Override
-  public List<QuestionReadDto> findQuestions(String keyword, Integer page) {
+  public List<QuestionReadDto> findAllQuestions(String keyword, Integer page) {
     int parsedPage = page < 1 ? MIN_PAGE : page;
     return questionRepository
         .findAllByKeyword(keyword, PageRequest.of(parsedPage - 1, MAX_PAGE_LIMIT))
@@ -40,15 +40,13 @@ public class QuestionServiceImpl implements QuestionService {
   @Transactional
   @Override
   public QuestionReadDto createQuestion(QuestionWriteDto questionWriteDto) {
-    AppUser currentlyLoggedUser = authService.getCurrentlyLoggedUser();
-    Question question = mapDtoToEntity(questionWriteDto);
-    question.setAuthor(currentlyLoggedUser);
-    Question savedQuestion = questionRepository.save(question);
-    return new QuestionReadDto(savedQuestion);
+    Question question = mapDtoToEntity(questionWriteDto,
+        authService.getCurrentlyLoggedUser());
+    return new QuestionReadDto(questionRepository.save(question));
   }
 
   @Override
-  public QuestionReadDto getQuestionById(Long id) {
+  public QuestionReadDto findQuestionById(Long id) {
     return questionRepository.findById(id)
         .map(QuestionReadDto::new)
         .orElseThrow(() -> new QuestionNotFoundException(id));
@@ -75,14 +73,15 @@ public class QuestionServiceImpl implements QuestionService {
     questionRepository.delete(question);
   }
 
+  private Question mapDtoToEntity(QuestionWriteDto questionWriteDto, AppUser appUser) {
+    Question question = new Question();
+    BeanUtils.copyProperties(questionWriteDto, question, "author", "answers", "dateAudit");
+    question.setAuthor(appUser);
+    return question;
+  }
+
   private Question findQuestionByIdForCurrentUser(Long id) {
     return questionRepository.findByIdAndAuthor(id, authService.getCurrentlyLoggedUser())
         .orElseThrow(() -> new QuestionNotFoundException(id));
-  }
-
-  private Question mapDtoToEntity(QuestionWriteDto questionWriteDto) {
-    Question question = new Question();
-    BeanUtils.copyProperties(questionWriteDto, question, "author", "answers", "dateAudit");
-    return question;
   }
 }

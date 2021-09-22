@@ -77,7 +77,7 @@ class QuestionServiceImplTest {
   void shouldThrowQuestionNotFoundExceptionWhenQuestionDoesNotExist() {
     when(questionRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-    Throwable throwable = catchThrowable(() -> questionService.getQuestionById(MockTestData.ID));
+    Throwable throwable = catchThrowable(() -> questionService.findQuestionById(MockTestData.ID));
 
     assertThat(throwable).isInstanceOf(QuestionNotFoundException.class);
   }
@@ -88,7 +88,7 @@ class QuestionServiceImplTest {
     question.setId(MockTestData.ID);
     when(questionRepository.findById(anyLong())).thenReturn(Optional.of(question));
 
-    QuestionReadDto questionReadDto = questionService.getQuestionById(question.getId());
+    QuestionReadDto questionReadDto = questionService.findQuestionById(question.getId());
 
     assertThat(questionReadDto)
         .isNotNull()
@@ -183,7 +183,7 @@ class QuestionServiceImplTest {
     when(questionRepository.findAllByKeyword(anyString(), any(PageRequest.class)))
         .thenReturn(new ArrayList<>());
 
-    List<QuestionReadDto> questionReadDtos = questionService.findQuestions("", 5);
+    List<QuestionReadDto> questionReadDtos = questionService.findAllQuestions("", 5);
 
     assertThat(questionReadDtos.size()).isEqualTo(0);
   }
@@ -198,7 +198,7 @@ class QuestionServiceImplTest {
     when(questionRepository.findAllByKeyword(anyString(), any(PageRequest.class)))
         .thenReturn(questions);
 
-    List<QuestionReadDto> questionReadDtos = questionService.findQuestions("", 1);
+    List<QuestionReadDto> questionReadDtos = questionService.findAllQuestions("", 1);
 
     assertThat(questionReadDtos.size()).isEqualTo(questions.size());
   }

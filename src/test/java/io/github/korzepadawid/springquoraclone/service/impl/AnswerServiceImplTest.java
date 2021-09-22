@@ -91,7 +91,7 @@ class AnswerServiceImplTest {
     when(questionRepository.findById(anyLong())).thenReturn(Optional.empty());
 
     Throwable throwable = catchThrowable(
-        () -> answerService.findAllQuestionAnswers(MockTestData.ID));
+        () -> answerService.findAllAnswersByQuestionId(MockTestData.ID));
 
     assertThat(throwable).isInstanceOf(QuestionNotFoundException.class);
   }
@@ -102,7 +102,7 @@ class AnswerServiceImplTest {
     when(questionRepository.findById(anyLong())).thenReturn(Optional.of(question));
     when(answerRepository.findByQuestion(any(Question.class))).thenReturn(new ArrayList<>());
 
-    List<AnswerReadDto> allQuestionAnswers = answerService.findAllQuestionAnswers(MockTestData.ID);
+    List<AnswerReadDto> allQuestionAnswers = answerService.findAllAnswersByQuestionId(MockTestData.ID);
 
     assertThat(allQuestionAnswers.size()).isEqualTo(0);
   }
@@ -117,7 +117,7 @@ class AnswerServiceImplTest {
     when(questionRepository.findById(anyLong())).thenReturn(Optional.of(question));
     when(answerRepository.findByQuestion(any(Question.class))).thenReturn(answers);
 
-    List<AnswerReadDto> allQuestionAnswers = answerService.findAllQuestionAnswers(MockTestData.ID);
+    List<AnswerReadDto> allQuestionAnswers = answerService.findAllAnswersByQuestionId(MockTestData.ID);
 
     assertThat(allQuestionAnswers.size()).isEqualTo(answers.size());
   }
@@ -126,7 +126,7 @@ class AnswerServiceImplTest {
   void shouldThrowAnswerNotFoundExceptionWhenAnswerWithProvidedIdDoesNotExist() {
     when(answerRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-    Throwable throwable = catchThrowable(() -> answerService.getAnswerById(MockTestData.ID));
+    Throwable throwable = catchThrowable(() -> answerService.findAnswerById(MockTestData.ID));
 
     assertThat(throwable).isInstanceOf(AnswerNotFoundException.class);
   }
@@ -136,7 +136,7 @@ class AnswerServiceImplTest {
     Answer answer = MockTestData.returnsAnswer();
     when(answerRepository.findById(anyLong())).thenReturn(Optional.of(answer));
 
-    AnswerReadDto answerReadDto = answerService.getAnswerById(MockTestData.ID);
+    AnswerReadDto answerReadDto = answerService.findAnswerById(MockTestData.ID);
 
     assertThat(answerReadDto)
         .isNotNull()

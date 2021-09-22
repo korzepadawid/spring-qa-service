@@ -6,7 +6,7 @@ public interface VoteService {
 
   void createVote(VoteDto voteDto, Long answerId);
 
-  void removeVote(Long answerId);
+  void deleteVoteById(Long answerId);
 
-  VoteDto checkVote(Long answerId);
+  VoteDto findVoteByAnswerId(Long answerId);
 }

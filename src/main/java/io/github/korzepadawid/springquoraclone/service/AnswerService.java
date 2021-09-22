@@ -8,9 +8,9 @@ public interface AnswerService {
 
   AnswerReadDto createAnswer(AnswerWriteDto answerWriteDto, Long questionId);
 
-  List<AnswerReadDto> findAllQuestionAnswers(Long questionId);
+  List<AnswerReadDto> findAllAnswersByQuestionId(Long questionId);
 
-  AnswerReadDto getAnswerById(Long answerId);
+  AnswerReadDto findAnswerById(Long answerId);
 
   void deleteAnswerById(Long answerId);
 
