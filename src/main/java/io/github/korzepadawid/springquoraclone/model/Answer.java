@@ -3,6 +3,7 @@ package io.github.korzepadawid.springquoraclone.model;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,6 +41,7 @@ public class Answer extends BaseEntity implements Serializable {
   private Question question;
 
   @OneToMany(
+      cascade = CascadeType.ALL,
       fetch = FetchType.LAZY,
       mappedBy = "answer"
   )

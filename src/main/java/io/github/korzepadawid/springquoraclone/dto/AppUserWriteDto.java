@@ -16,19 +16,19 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AppUserWriteDto {
 
-  @Email(message = "Email must be valid.")
-  @NotBlank(message = "Email can't be blank.")
-  @Size(min = 3, max = 255, message = "Email must be between 3 and 255 characters.")
+  @Email(message = "Must be valid")
+  @NotBlank(message = "Can't be blank")
+  @Size(min = 3, max = 255, message = "Must be between 3 and 255 characters.")
   private String email;
 
-  @NotBlank(message = "Username can't be blank.")
-  @Size(min = 3, max = 255, message = "Username must be between 3 and 255 characters.")
+  @NotBlank(message = "Can't be blank")
+  @Size(min = 3, max = 255, message = "Must be between 3 and 255 characters.")
   private String username;
 
-  @NotBlank(message = "Password can't be blank.")
+  @NotBlank(message = "Can't be blank.")
   @Size(max = 72, message = "Max password length is 72.")
   private String password;
 
-  @Size(max = 255, message = "Max description length is 255.")
+  @Size(max = 255, message = "Max length is 255.")
   private String description;
 }

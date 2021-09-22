@@ -14,9 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LoginDto {
 
-  @NotBlank(message = "Username can't be blank")
+  @NotBlank(message = "Can't be blank")
   private String username;
 
-  @NotBlank(message = "Password can't be blank")
+  @NotBlank(message = "Can't be blank")
   private String password;
 }

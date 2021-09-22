@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AnswerWriteDto {
 
-  @NotBlank
-  @Size(min = 1, max = 255, message = "Answer must be between 1 and 255 characters")
+  @NotBlank(message = "Can't be blank")
+  @Size(min = 1, max = 255, message = "Must be between 1 and 255 characters")
   private String text;
 }
