@@ -2,13 +2,16 @@ package io.github.korzepadawid.springquoraclone.config;
 
 import static java.util.Collections.singletonList;
 
+import java.util.Collections;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Contact;
 import springfox.documentation.service.SecurityReference;
 import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
@@ -27,8 +30,26 @@ public class SwaggerConfig {
         .select()
         .paths(PathSelectors.ant("/api/v1/**"))
         .build()
+        .apiInfo(createApiInfo())
         .securitySchemes(singletonList(createSchema()))
         .securityContexts(singletonList(createContext()));
+  }
+
+  private ApiInfo createApiInfo() {
+    return new ApiInfo(
+        "Q&A Service",
+        "REST API for Q&A Service.",
+        "1.0",
+        "urn:tos",
+        new Contact(
+            "Dawid",
+            "https://github.com/korzepadawid",
+            "korzepadawid@yahoo.com"
+        ),
+        "MIT License",
+        "https://choosealicense.com/licenses/mit/",
+        Collections.emptyList()
+    );
   }
 
   private SecurityContext createContext() {
