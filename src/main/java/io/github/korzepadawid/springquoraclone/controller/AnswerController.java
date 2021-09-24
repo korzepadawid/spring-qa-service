@@ -3,6 +3,7 @@ package io.github.korzepadawid.springquoraclone.controller;
 import io.github.korzepadawid.springquoraclone.dto.AnswerReadDto;
 import io.github.korzepadawid.springquoraclone.dto.AnswerWriteDto;
 import io.github.korzepadawid.springquoraclone.service.AnswerService;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,14 @@ public class AnswerController {
 
   private final AnswerService answerService;
 
+  @ApiOperation(value = "Finds all answers by question id")
   @GetMapping("/api/v1/questions/{questionId}/answers")
   @ResponseStatus(HttpStatus.OK)
   public List<AnswerReadDto> findAllAnswersByQuestionId(@PathVariable Long questionId) {
     return answerService.findAllAnswersByQuestionId(questionId);
   }
 
+  @ApiOperation(value = "Creates new answer to specific question")
   @PostMapping("/api/v1/questions/{questionId}/answers")
   @ResponseStatus(HttpStatus.CREATED)
   public AnswerReadDto createAnswer(@Valid @RequestBody AnswerWriteDto answerWriteDto,
@@ -35,12 +38,14 @@ public class AnswerController {
     return answerService.createAnswer(answerWriteDto, questionId);
   }
 
+  @ApiOperation(value = "Finds single answer by its id")
   @GetMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.OK)
   public AnswerReadDto findAnswerById(@PathVariable Long answerId) {
     return answerService.findAnswerById(answerId);
   }
 
+  @ApiOperation(value = "Updates answer by its id", notes = "You can only update your answer.")
   @PatchMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateAnswerById(@Valid @RequestBody AnswerWriteDto answerWriteDto,
@@ -48,6 +53,7 @@ public class AnswerController {
     answerService.updateAnswerById(answerWriteDto, answerId);
   }
 
+  @ApiOperation(value = "Deletes answer by its id", notes = "You can only delete your answer.")
   @DeleteMapping("/api/v1/answers/{answerId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteAnswerById(@PathVariable Long answerId) {

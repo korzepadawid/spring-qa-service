@@ -25,7 +25,8 @@ public class QuestionController {
 
   private final QuestionService questionService;
 
-  @ApiOperation(value = "Finds all questions by keyword", notes = "You can specify the keyword, otherwise, all questions will be matched.")
+  @ApiOperation(value = "Finds all questions by keyword", notes = "You can specify the keyword, "
+      + "otherwise, all questions will be matched.")
   @GetMapping("/api/v1/questions")
   @ResponseStatus(HttpStatus.OK)
   public List<QuestionReadDto> findAllQuestions(
@@ -41,14 +42,14 @@ public class QuestionController {
     return questionService.createQuestion(questionWriteDto);
   }
 
-  @ApiOperation(value = "Finds single question by id")
+  @ApiOperation(value = "Finds single question by its id")
   @GetMapping("/api/v1/questions/{questionId}")
   @ResponseStatus(HttpStatus.OK)
   public QuestionReadDto findQuestionById(@PathVariable Long questionId) {
     return questionService.findQuestionById(questionId);
   }
 
-  @ApiOperation(value = "Updates question by id", notes = "You can only update the question, that belongs to you.")
+  @ApiOperation(value = "Updates question by its id", notes = "You can only update your question.")
   @PatchMapping("/api/v1/questions/{questionId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updateQuestionById(@Valid @RequestBody QuestionUpdateDto questionUpdateDto,
@@ -56,7 +57,7 @@ public class QuestionController {
     questionService.updateQuestionById(questionUpdateDto, questionId);
   }
 
-  @ApiOperation(value = "Deletes question by id", notes = "You can only delete the question, that belongs to you.")
+  @ApiOperation(value = "Deletes question by its id", notes = "You can only delete your question.")
   @DeleteMapping("/api/v1/questions/{questionId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteQuestionById(@PathVariable Long questionId) {

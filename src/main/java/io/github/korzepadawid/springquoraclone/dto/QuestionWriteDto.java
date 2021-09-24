@@ -16,6 +16,7 @@ import lombok.Setter;
 public class QuestionWriteDto {
 
   @NotBlank(message = "Title can't be blank")
+  @Size(max = 255, message = "Max length is 255.")
   private String title;
 
   @Size(max = 255, message = "Max length is 255.")

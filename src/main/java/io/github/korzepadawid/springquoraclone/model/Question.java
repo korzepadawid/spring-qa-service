@@ -30,11 +30,10 @@ import lombok.experimental.SuperBuilder;
 public class Question extends BaseEntity implements Serializable {
 
   @NotBlank
-  @Size(min = 3, max = 255)
+  @Size(max = 255)
   private String title;
 
-  @NotBlank
-  @Size(min = 3, max = 255)
+  @Size(max = 255)
   private String description;
 
   @NotNull

@@ -14,9 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class QuestionUpdateDto {
 
-  @Size(min = 3, max = 255, message = "Must be between 3 and 255 characters.")
+  @Size(min = 1, max = 255, message = "Must be between 1 and 255 characters.")
   private String title;
 
-  @Size(min = 3, max = 255, message = "Must be between 3 and 255 characters.")
+  @Size(max = 255, message = "Max length is 255.")
   private String description;
 }
