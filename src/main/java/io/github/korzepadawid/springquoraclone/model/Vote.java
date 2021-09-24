@@ -7,6 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class Vote extends BaseEntity implements Serializable {
   @JoinColumn(name = "answer_id")
   private Answer answer;
 
+  @NotNull
   private VoteType voteType;
 
   @Embedded
