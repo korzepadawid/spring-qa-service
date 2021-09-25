@@ -1,5 +1,6 @@
 package io.github.korzepadawid.springquoraclone.model;
 
+import io.github.korzepadawid.springquoraclone.model.audit.DateAudit;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "answers")
-public class Answer extends BaseEntity implements Serializable {
+public class Answer extends AbstractBaseEntity implements Serializable {
 
   @NotBlank
   @Size(min = 3, max = 255)

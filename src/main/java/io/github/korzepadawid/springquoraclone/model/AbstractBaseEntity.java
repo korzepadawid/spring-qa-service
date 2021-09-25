@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @MappedSuperclass
-public abstract class BaseEntity implements Serializable {
+public abstract class AbstractBaseEntity implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

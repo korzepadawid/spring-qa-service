@@ -1,4 +1,4 @@
-package io.github.korzepadawid.springquoraclone.model;
+package io.github.korzepadawid.springquoraclone.model.audit;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

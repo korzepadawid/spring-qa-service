@@ -1,5 +1,6 @@
 package io.github.korzepadawid.springquoraclone.model;
 
+import io.github.korzepadawid.springquoraclone.model.audit.DateAudit;
 import java.io.Serializable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -21,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "votes")
-public class Vote extends BaseEntity implements Serializable {
+public class Vote extends AbstractBaseEntity implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "app_user_id")

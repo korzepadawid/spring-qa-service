@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Table(name = "app_users")
-public class AppUser extends BaseEntity implements Serializable {
+public class AppUser extends AbstractBaseEntity implements Serializable {
 
   @Email
   @NotBlank
