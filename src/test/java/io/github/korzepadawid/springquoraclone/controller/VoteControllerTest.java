@@ -1,16 +1,5 @@
 package io.github.korzepadawid.springquoraclone.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import io.github.korzepadawid.springquoraclone.dto.VoteDto;
 import io.github.korzepadawid.springquoraclone.exception.AnswerNotFoundException;
 import io.github.korzepadawid.springquoraclone.exception.GlobalExceptionHandler;
@@ -29,64 +18,77 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith(MockitoExtension.class)
 class VoteControllerTest {
 
   private MockMvc mockMvc;
 
-  @Mock
-  private VoteService voteService;
+  @Mock private VoteService voteService;
 
-  @InjectMocks
-  private VoteController voteController;
+  @InjectMocks private VoteController voteController;
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(voteController)
-        .setControllerAdvice(GlobalExceptionHandler.class)
-        .build();
+    mockMvc =
+        MockMvcBuilders.standaloneSetup(voteController)
+            .setControllerAdvice(GlobalExceptionHandler.class)
+            .build();
   }
 
   @Test
   void shouldReturn404AndStopVotingWhenAnswerDoesNotExist() throws Exception {
-    doThrow(new AnswerNotFoundException(MockTestData.ID)).when(voteService)
+    doThrow(new AnswerNotFoundException(MockTestData.ID))
+        .when(voteService)
         .createVote(any(VoteDto.class), anyLong());
 
-    mockMvc.perform(put("/api/v1/answers/1/votes")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(JsonMapper.toJson(MockTestData.returnsVoteDto(VoteType.DOWN_VOTE))))
+    mockMvc
+        .perform(
+            put("/api/v1/answers/1/votes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonMapper.toJson(MockTestData.returnsVoteDto(VoteType.DOWN_VOTE))))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void shouldReturn204WhenVotedSuccess() throws Exception {
-    mockMvc.perform(put("/api/v1/answers/1/votes")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(JsonMapper.toJson(MockTestData.returnsVoteDto(VoteType.DOWN_VOTE))))
+    mockMvc
+        .perform(
+            put("/api/v1/answers/1/votes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonMapper.toJson(MockTestData.returnsVoteDto(VoteType.DOWN_VOTE))))
         .andExpect(status().isNoContent());
   }
 
   @Test
   void shouldReturn404AndStopRemovingWhenAnswerDoesNotExist() throws Exception {
-    doThrow(new AnswerNotFoundException(MockTestData.ID)).when(voteService).deleteVoteById(anyLong());
+    doThrow(new AnswerNotFoundException(MockTestData.ID))
+        .when(voteService)
+        .deleteVoteById(anyLong());
 
-    mockMvc.perform(delete("/api/v1/answers/1/votes"))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(delete("/api/v1/answers/1/votes")).andExpect(status().isNotFound());
   }
 
   @Test
   void shouldReturn404AndStopRemovingWhenVoteDoesNotExist() throws Exception {
-    doThrow(new VoteNotFoundException(MockTestData.ID, "usernamegoeshere")).when(voteService)
+    doThrow(new VoteNotFoundException(MockTestData.ID, "usernamegoeshere"))
+        .when(voteService)
         .deleteVoteById(anyLong());
 
-    mockMvc.perform(delete("/api/v1/answers/1/votes"))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(delete("/api/v1/answers/1/votes")).andExpect(status().isNotFound());
   }
 
   @Test
   void shouldReturn204WhenVoteRemovedSuccessfully() throws Exception {
-    mockMvc.perform(delete("/api/v1/answers/1/votes"))
-        .andExpect(status().isNoContent());
+    mockMvc.perform(delete("/api/v1/answers/1/votes")).andExpect(status().isNoContent());
   }
 
   @Test
@@ -94,16 +96,15 @@ class VoteControllerTest {
     when(voteService.findVoteByAnswerId(anyLong()))
         .thenThrow(new VoteNotFoundException(MockTestData.ID, "username"));
 
-    mockMvc.perform(get("/api/v1/answers/1/votes/me"))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(get("/api/v1/answers/1/votes")).andExpect(status().isNotFound());
   }
 
   @Test
   void shouldReturn404WhenAnswerDoesNotExist() throws Exception {
-    when(voteService.findVoteByAnswerId(anyLong())).thenThrow(new AnswerNotFoundException(MockTestData.ID));
+    when(voteService.findVoteByAnswerId(anyLong()))
+        .thenThrow(new AnswerNotFoundException(MockTestData.ID));
 
-    mockMvc.perform(get("/api/v1/answers/1/votes/me"))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(get("/api/v1/answers/1/votes")).andExpect(status().isNotFound());
   }
 
   @Test
@@ -111,7 +112,8 @@ class VoteControllerTest {
     VoteDto voteDto = MockTestData.returnsVoteDto(VoteType.DOWN_VOTE);
     when(voteService.findVoteByAnswerId(anyLong())).thenReturn(voteDto);
 
-    mockMvc.perform(get("/api/v1/answers/1/votes/me"))
+    mockMvc
+        .perform(get("/api/v1/answers/1/votes"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.voteType", is(voteDto.getVoteType().toString())));
   }
