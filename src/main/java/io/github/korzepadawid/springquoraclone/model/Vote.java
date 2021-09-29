@@ -4,6 +4,8 @@ import io.github.korzepadawid.springquoraclone.model.audit.DateAudit;
 import java.io.Serializable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,9 +34,9 @@ public class Vote extends AbstractBaseEntity implements Serializable {
   @JoinColumn(name = "answer_id")
   private Answer answer;
 
-  @NotNull
-  private VoteType voteType;
+  @Embedded private final DateAudit dateAudit = new DateAudit();
 
-  @Embedded
-  private final DateAudit dateAudit = new DateAudit();
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  private VoteType voteType;
 }

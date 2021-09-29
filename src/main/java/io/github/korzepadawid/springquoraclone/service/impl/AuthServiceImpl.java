@@ -33,35 +33,35 @@ public class AuthServiceImpl implements AuthService {
   @Transactional
   @Override
   public AppUserReadDto register(AppUserWriteDto appUserWriteDto) {
-    appUserRepository.findByUsernameOrEmail(appUserWriteDto.getUsername(),
-        appUserWriteDto.getEmail())
-        .ifPresent(appUser -> {
-          throw new UserAlreadyExistsException();
-        });
+    appUserRepository
+        .findByUsernameOrEmail(appUserWriteDto.getUsername(), appUserWriteDto.getEmail())
+        .ifPresent(
+            appUser -> {
+              throw new UserAlreadyExistsException();
+            });
     AppUser appUser = mapDtoToEntity(appUserWriteDto);
     AppUser savedAppUser = appUserRepository.save(appUser);
     return new AppUserReadDto(savedAppUser);
   }
 
+  @Transactional(readOnly = true)
   @Override
   public TokenDto login(LoginDto loginDto) {
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            loginDto.getUsername(),
-            loginDto.getPassword()
-        )
-    );
+    Authentication authentication =
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginDto.getUsername(), loginDto.getPassword()));
     User user = (User) authentication.getPrincipal();
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return new TokenDto(jwtProvider.generateToken(user));
   }
 
+  @Transactional(readOnly = true)
   @Override
   public AppUser getCurrentlyLoggedUser() {
-    User user = (User) SecurityContextHolder.getContext()
-        .getAuthentication()
-        .getPrincipal();
-    return appUserRepository.findByUsernameOrEmailLike(user.getUsername())
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return appUserRepository
+        .findByUsernameOrEmailLike(user.getUsername())
         .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
   }
 

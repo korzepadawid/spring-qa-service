@@ -40,14 +40,15 @@ public class QuestionServiceImpl implements QuestionService {
   @Transactional
   @Override
   public QuestionReadDto createQuestion(QuestionWriteDto questionWriteDto) {
-    Question question = mapDtoToEntity(questionWriteDto,
-        authService.getCurrentlyLoggedUser());
+    Question question = mapDtoToEntity(questionWriteDto, authService.getCurrentlyLoggedUser());
     return new QuestionReadDto(questionRepository.save(question));
   }
 
+  @Transactional(readOnly = true)
   @Override
   public QuestionReadDto findQuestionById(Long id) {
-    return questionRepository.findById(id)
+    return questionRepository
+        .findById(id)
         .map(QuestionReadDto::new)
         .orElseThrow(() -> new QuestionNotFoundException(id));
   }
@@ -81,7 +82,8 @@ public class QuestionServiceImpl implements QuestionService {
   }
 
   private Question findQuestionByIdForCurrentUser(Long id) {
-    return questionRepository.findByIdAndAuthor(id, authService.getCurrentlyLoggedUser())
+    return questionRepository
+        .findByIdAndAuthor(id, authService.getCurrentlyLoggedUser())
         .orElseThrow(() -> new QuestionNotFoundException(id));
   }
 }

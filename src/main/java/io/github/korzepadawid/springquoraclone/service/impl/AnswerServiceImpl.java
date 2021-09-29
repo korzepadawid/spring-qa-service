@@ -28,28 +28,32 @@ public class AnswerServiceImpl implements AnswerService {
   @Transactional
   @Override
   public AnswerReadDto createAnswer(AnswerWriteDto answerWriteDto, Long questionId) {
-    Question question = questionRepository.findById(questionId)
-        .orElseThrow(() -> new QuestionNotFoundException(questionId));
-    Answer answer = mapDtoToEntity(answerWriteDto,
-        authService.getCurrentlyLoggedUser(),
-        question);
+    Question question =
+        questionRepository
+            .findById(questionId)
+            .orElseThrow(() -> new QuestionNotFoundException(questionId));
+    Answer answer = mapDtoToEntity(answerWriteDto, authService.getCurrentlyLoggedUser(), question);
     return new AnswerReadDto(answerRepository.save(answer));
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   @Override
   public List<AnswerReadDto> findAllAnswersByQuestionId(Long questionId) {
-    return questionRepository.findById(questionId)
-        .map(question -> answerRepository.findByQuestion(question)
-            .stream()
-            .map(AnswerReadDto::new)
-            .collect(Collectors.toList()))
+    return questionRepository
+        .findById(questionId)
+        .map(
+            question ->
+                answerRepository.findByQuestion(question).stream()
+                    .map(AnswerReadDto::new)
+                    .collect(Collectors.toList()))
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
   }
 
+  @Transactional(readOnly = true)
   @Override
   public AnswerReadDto findAnswerById(Long answerId) {
-    return answerRepository.findById(answerId)
+    return answerRepository
+        .findById(answerId)
         .map(AnswerReadDto::new)
         .orElseThrow(() -> new AnswerNotFoundException(answerId));
   }
@@ -79,7 +83,8 @@ public class AnswerServiceImpl implements AnswerService {
   }
 
   private Answer findAnswerByIdForCurrentUser(Long answerId) {
-    return answerRepository.findByIdAndAuthor(answerId, authService.getCurrentlyLoggedUser())
+    return answerRepository
+        .findByIdAndAuthor(answerId, authService.getCurrentlyLoggedUser())
         .orElseThrow(() -> new AnswerNotFoundException(answerId));
   }
 }
